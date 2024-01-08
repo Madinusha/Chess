@@ -118,7 +118,7 @@ public class ChessBoard {
 		}
 	}
 	private void figureCapture(Figure capturedFigure) {
-		// Ваш код для обработки события съедания фигуры
+		// код для обработки события съедания фигуры
 		System.out.println("Фигура съедена!");
 	}
 
