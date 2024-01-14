@@ -6,7 +6,7 @@ public class King extends Figure{
 	}
 
 	@Override
-	public boolean isValidMove(Position from, Position to, ChessBoard board) {
+	public boolean isValidMove(Position from, Position to, Chessboard board) {
 		int rowDifference = Math.abs(to.getRow() - from.getRow());
 		int colDifference = Math.abs(to.getCol() - from.getCol());
 

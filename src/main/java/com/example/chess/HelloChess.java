@@ -22,7 +22,7 @@ public class HelloChess extends Application {
 		stage.show();
 
 
-//		ChessBoard chessBoard = new ChessBoard();
+//		Chessboard chessBoard = new Chessboard();
 //		System.out.println("1.\n" + chessBoard + "\n");
 //
 //		Position from = new Position('d', 2);
@@ -53,7 +53,7 @@ public class HelloChess extends Application {
 //		positions.add(blackRookPosition);
 //
 //		// Создаем доску с определенным расположением фигур
-//		ChessBoard c = new ChessBoard(figures, positions);
+//		Chessboard c = new Chessboard(figures, positions);
 //
 //		// Выводим доску в консоль
 //		System.out.println("1.\n" + c);

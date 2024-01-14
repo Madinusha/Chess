@@ -6,7 +6,7 @@ public class Rook extends Figure { // Ладья
 	}
 
 	@Override
-	public boolean isValidMove(Position from, Position to, ChessBoard board) {
+	public boolean isValidMove(Position from, Position to, Chessboard board) {
 		// Реализация валидации хода для ладьи
 		int rowDifference = Math.abs(to.getRow() - from.getRow());
 		int colDifference = Math.abs(to.getCol() - from.getCol());

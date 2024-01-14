@@ -10,7 +10,9 @@ public abstract class Figure {
 	public String getColor() {
 		return color;
 	}
-	public String getFileName() { return (getClass().getSimpleName() + color); }
+	public String getFileName() {
+		return (getClass().getSimpleName());
+	}
 
-	public abstract boolean isValidMove(Position from, Position to, ChessBoard board);
+	public abstract boolean isValidMove(Position from, Position to, Chessboard board);
 }

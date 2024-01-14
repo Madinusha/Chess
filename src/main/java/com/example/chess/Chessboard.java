@@ -4,14 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChessBoard {
+public class Chessboard {
+
+
 	private Map<Position, Figure> board; // Шахматная доска
 
-	public ChessBoard() {
+	public Chessboard() {
 		this.board = new HashMap<>();
 		initialize();
 	}
-
+	public Map<Position, Figure> getChessboard() {
+		return board;
+	}
 	public void initialize() {
 		// Очистить доску перед началом новой игры
 		board.clear();
@@ -22,7 +26,7 @@ public class ChessBoard {
 		// Расставить черные фигуры
 		placeInitialPieces("black");
 	}
-	public ChessBoard(List<Figure> figures, List<Position> positions) {
+	public Chessboard(List<Figure> figures, List<Position> positions) {
 		if (figures.size() != positions.size()) {
 			throw new IllegalArgumentException("Количество фигур должно быть равно количеству позиций.");
 		}

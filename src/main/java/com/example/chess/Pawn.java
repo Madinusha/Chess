@@ -16,7 +16,7 @@ public class Pawn extends Figure {
 	}
 
 	@Override
-	public boolean isValidMove(Position from, Position to, ChessBoard board) {
+	public boolean isValidMove(Position from, Position to, Chessboard board) {
 		int direction = getColor().equals("white") ? 1 : -1;
 
 		int rowDifference = to.getRow() - from.getRow();

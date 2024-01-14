@@ -3,19 +3,19 @@ package com.example.chess;
 public class Player {
 	private String username;
 	private int score;
-	private ChessBoard chessBoard;
+	private Chessboard chessBoard;
 
 	public Player(String username) {
 		this.username = username;
 		this.score = 0;
-		this.chessBoard = new ChessBoard();
+		this.chessBoard = new Chessboard();
 	}
 
 	public int getScore() {
 		return score;
 	}
 
-	public ChessBoard getChessBoard() {
+	public Chessboard getChessBoard() {
 		return chessBoard;
 	}
 

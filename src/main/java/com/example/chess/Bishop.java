@@ -5,7 +5,7 @@ public class Bishop extends Figure{ // Офицер
 		super(color);
 	}
 	@Override
-	public boolean isValidMove(Position from, Position to, ChessBoard board) {
+	public boolean isValidMove(Position from, Position to, Chessboard board) {
 		int rowDifference = Math.abs(to.getRow() - from.getRow());
 		int colDifference = Math.abs(to.getCol() - from.getCol());
 
