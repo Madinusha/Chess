@@ -1,5 +1,8 @@
 package com.example.chess;
 
+import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.util.Map;
 
@@ -17,7 +21,7 @@ public class gameController {
 	@FXML
 	public GridPane gridPane;
 	private Button resizeButton;
-
+	private Position selectedPosition;
 	private double mouseX, mouseY;
 	public Chessboard chessboard;
 
@@ -68,7 +72,6 @@ public class gameController {
 			for (int col = 0; col < numCols; col++) {
 				Position position = new Position(col+1, 8-row);
 
-
 				Label label = new Label();
 				label.setMaxSize(100, 100);
 
@@ -91,10 +94,92 @@ public class gameController {
 					//resizeButton.setPrefSize(stackPane.getHeight()/5, stackPane.getHeight()/5);
 				}
 				gridPane.add(stackPane, col, row);
+
+				Node cellNode = gridPane.getChildren().get(row * numCols + col);
+				int finalRow = row;
+				int finalCol = col;
+				// Установите обработчик события для нажатия на ячейку
+				cellNode.setOnMouseClicked(event -> handleCellClick(finalRow, finalCol));
 			}
 		}
 
 		placeFiguresSP();
+	}
+	// Метод для обработки события нажатия на ячейку
+	private void handleCellClick(int row, int col) {
+		System.out.println("Clicked on cell: " + row + ", " + col);
+		if (selectedPosition == null) {
+			Position p =  new Position(col+1, 8 - row);
+			if (chessboard.getFigureAt(p) != null)
+			{
+				selectedPosition = p;
+			}
+		} else {
+			Position targetPosition = new Position(col+1, 8 - row);
+			if (chessboard.isValidMove(selectedPosition, targetPosition)) {
+				moveFigure(selectedPosition, targetPosition);
+				System.out.println(selectedPosition + " " + targetPosition);
+			}
+			selectedPosition = null;
+		}
+	}
+	private void moveFigure(Position from, Position to) {
+		Node sourceNode = getNodeAtPosition(from);
+		Node targetNode = getNodeAtPosition(to);
+
+		if (sourceNode instanceof StackPane && targetNode instanceof StackPane) {
+			StackPane sourceStackPane = (StackPane) sourceNode;
+			StackPane targetStackPane = (StackPane) targetNode;
+
+			// Проверяем, есть ли ImageView в sourceStackPane
+			ImageView imageView = findImageViewInStackPane(sourceStackPane);
+
+			if (imageView != null) {
+				// Создаем анимацию перемещения ImageView
+				TranslateTransition transition = new TranslateTransition(Duration.millis(200), imageView);
+
+				// Устанавливаем конечные координаты для анимации (новая позиция)
+				transition.setToX(getXCoordinate(from.getColAsNumber(), to.getColAsNumber()));
+				transition.setToY(getYCoordinate(from.getRow(), to.getRow()));
+
+				// Обработчик завершения анимации (если нужно)
+				transition.setOnFinished(event -> {
+					if (chessboard.isEdible(from, to))
+					{
+						targetStackPane.getChildren().remove(findImageViewInStackPane(targetStackPane));
+					}
+					chessboard.moveFigure(from, to);
+					sourceStackPane.getChildren().remove(imageView);
+					targetStackPane.getChildren().add(imageView);
+					imageView.setTranslateX(0);
+					imageView.setTranslateY(0);
+
+				});
+
+				transition.play();
+			} else System.out.println("Не имг вью");
+		} else System.out.println("Не стакпейн");
+	}
+	private ImageView findImageViewInStackPane(StackPane stackPane) {
+		for (Node node : stackPane.getChildren()) {
+			if (node instanceof ImageView) {
+				return (ImageView) node;
+			}
+		}
+		return null;
+	}
+
+	private Node getNodeAtPosition(Position position) {
+		int index = position.getColAsNumber() - 1 + (8 - position.getRow()) * 8;
+		return gridPane.getChildren().get(index);
+	}
+
+	private double getXCoordinate(int colFrom, int colTo) {
+		return (colTo - colFrom) * (gridPane.getHeight() / 8);
+	}
+
+	private double getYCoordinate(int rowFrom, int rowTo) {
+		return (rowFrom - rowTo) * (gridPane.getHeight() / 8);
 	}
 
 	public void placeFiguresSP() {
@@ -130,6 +215,7 @@ public class gameController {
 
 					// Добавление ImageView в StackPane
 					stackPane.getChildren().add(imageView);
+
 				}
 			}
 		}

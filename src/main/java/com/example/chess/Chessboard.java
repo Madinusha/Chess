@@ -91,7 +91,40 @@ public class Chessboard {
 		board.clear();
 		initialize();
 	}
-	public void moveFigure(Position from, Position to) {
+	public boolean isValidMove(Position from, Position to)
+	{
+		Figure movingFigure = board.get(from);
+		Figure targetFigure = board.get(to);
+		if (movingFigure != null) {
+			// Проверка, что ход допустим для фигуры
+			if (movingFigure.isValidMove(from, to, this)) {
+				// Проверка, что в целевой клетке нет фигуры того же цвета
+				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	public boolean isEdible(Position from, Position to)
+	{
+		Figure movingFigure = board.get(from);
+		Figure targetFigure = board.get(to);
+		if (movingFigure != null) {
+			// Проверка, что ход допустим для фигуры
+			if (movingFigure.isValidMove(from, to, this)) {
+				// Проверка, что в целевой клетке нет фигуры того же цвета
+				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+					if (targetFigure != null) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean moveFigure(Position from, Position to) {
 		Figure movingFigure = board.get(from);
 		Figure targetFigure = board.get(to);
 
@@ -116,47 +149,18 @@ public class Chessboard {
 					}
 
 					// Вывести информацию о ходе
-					System.out.println(movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
+					System.out.println("Успех! " + movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
+					return true;
 				} else System.out.println(movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " не может есть фигуру своего цвета.");
 			} else System.out.println(movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " не может сделать ход с " + from + " на " + to);
 		}
+		return false;
 	}
 	private void figureCapture(Figure capturedFigure) {
 		// код для обработки события съедания фигуры
 		System.out.println("Фигура съедена!");
 	}
 
-
-
-//	public void movePiece(Position from, Position to) {
-//		// Получить фигуру, которую нужно переместить
-//		Figure movingFigure = board.get(from);
-//
-//		// Проверить, что фигура действительно существует
-//		if (movingFigure == null) {
-//			System.out.println("Нет фигуры на указанной позиции.");
-//			return;
-//		}
-//
-//		// Проверить, что ход допустим
-//		if (!movingFigure.isValidMove(from, to, this)) {
-//			System.out.println("Недопустимый ход для выбранной фигуры.");
-//			return;
-//		}
-//
-//		// Переместить фигуру на новую позицию
-//		board.remove(from);
-//		board.put(to, movingFigure);
-//
-//		// Проверяем, если это пешка, меняем флаг
-//		if (movingFigure instanceof Pawn) {
-//			((Pawn) movingFigure).setHasMoved(true);
-//		}
-//
-//
-//		// Вывести информацию о ходе (можно изменить в соответствии с вашими требованиями)
-//		System.out.println(movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
-//	}
 	public Figure getFigureAt(Position position) {
 		return board.get(position);
 	}
