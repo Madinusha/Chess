@@ -12,6 +12,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.Map;
@@ -102,7 +105,6 @@ public class gameController {
 				cellNode.setOnMouseClicked(event -> handleCellClick(finalRow, finalCol));
 			}
 		}
-
 		placeFiguresSP();
 	}
 	// Метод для обработки события нажатия на ячейку
@@ -113,14 +115,92 @@ public class gameController {
 			if (chessboard.getFigureAt(p) != null)
 			{
 				selectedPosition = p;
+				showValidMove(selectedPosition);
 			}
 		} else {
 			Position targetPosition = new Position(col+1, 8 - row);
+
+			Figure figure1 = chessboard.getFigureAt(selectedPosition);
+			Figure figure2 = chessboard.getFigureAt(targetPosition);
+			if (figure1 == figure2)
+			{
+				hideValidMove(selectedPosition);
+				selectedPosition = null;
+				return;
+			}
+			if (figure1 != null && figure2 != null)
+				if (figure1.getColor() == figure2.getColor())
+				{
+					hideValidMove(selectedPosition);
+					selectedPosition = targetPosition;
+					showValidMove(selectedPosition);
+					return;
+				}
+			hideValidMove(selectedPosition);
 			if (chessboard.isValidMove(selectedPosition, targetPosition)) {
 				moveFigure(selectedPosition, targetPosition);
 				System.out.println(selectedPosition + " " + targetPosition);
 			}
 			selectedPosition = null;
+		}
+	}
+	public void hideValidMove(Position from)
+	{
+		StackPane sp = (StackPane)getNodeAtPosition(from);
+		for (Node node : sp.getChildren()) {
+			if (node instanceof Rectangle) {
+				sp.getChildren().remove(node);
+				break;
+			}
+		}
+		for (int row = 0; row < 8; row++)
+		{
+			for (int col = 0; col < 8; col++)
+			{
+				Position to = new Position(col + 1, 8 - row);
+				Node nod = getNodeAtPosition(to);
+				if (nod instanceof StackPane)
+				{
+					StackPane stackPane = (StackPane) nod;
+					for (Node node : stackPane.getChildren()) {
+						if (node instanceof Circle) {
+							stackPane.getChildren().remove(node);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	public void showValidMove(Position from) {
+		StackPane sp = (StackPane)getNodeAtPosition(from);
+		Rectangle rectangle = new Rectangle();
+		rectangle.setFill(Color.GREEN);
+		rectangle.widthProperty().bind(sp.widthProperty());
+		rectangle.heightProperty().bind(sp.heightProperty());
+		sp.getChildren().add(1, rectangle);
+
+		for (int row = 0; row < 8; row++) {
+			for (int col = 0; col < 8; col++) {
+				Position to = new Position(col + 1, 8 - row);
+				StackPane stackPane = (StackPane)getNodeAtPosition(to);
+				Figure figureTo = chessboard.getFigureAt(to);
+				if (chessboard.isValidMove(from, to)) {
+					if (figureTo == null) {
+						double radius = stackPane.getHeight() / 6;
+						Circle greenCircle = new Circle(radius, Color.GREEN);
+						stackPane.getChildren().add(greenCircle);
+					}
+					else {
+						double radius = 20;
+						Circle circle = new Circle(radius);
+						circle.setStroke(Color.GREEN);
+						circle.setStrokeWidth(3);
+						circle.setFill(null);
+						stackPane.getChildren().add(circle);
+					}
+				}
+			}
 		}
 	}
 	private void moveFigure(Position from, Position to) {
@@ -215,46 +295,9 @@ public class gameController {
 
 					// Добавление ImageView в StackPane
 					stackPane.getChildren().add(imageView);
-
 				}
 			}
 		}
 	}
-
-	public void placeFiguresL()
-	{
-		for (Map.Entry<Position, Figure> entry : chessboard.getChessboard().entrySet()) {
-			Position position = entry.getKey();
-			Figure figure = entry.getValue();
-			Node node = gridPane.getChildren().get(position.getColAsNumber()-1 + (8 - position.getRow()) * 8);
-
-			// Проверка, является ли дочерний узел Label
-			if (node instanceof Label) {
-				Label label = (Label) node;
-				if (figure != null)
-				{
-					Image image = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/" + figure.getFileName() + ".png"));
-
-					ImageView imageView = new ImageView(image);
-
-					// Установка слушателя изменения размера для лейбла
-					label.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-						imageView.setFitWidth(newWidth.doubleValue() / 1.2);
-					});
-
-					label.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-						imageView.setFitHeight(newHeight.doubleValue() / 1.2);
-					});
-
-					imageView.setFitWidth(50);
-					imageView.setFitHeight(50);
-
-					label.setGraphic(imageView);
-				}
-			}
-		}
-
-	}
-
 
 }
