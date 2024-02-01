@@ -55,7 +55,8 @@ public class gameController {
 
 			// Установка нового размера для кнопки
 			double stackPaneSize = ((StackPane) resizeButton.getParent()).getHeight();
-			double newSize = stackPaneSize / 5;
+			//double newSize = stackPaneSize / 5;
+			double newSize = gridPane.getWidth() / 8 / 5;
 			resizeButton.setPrefSize(newSize, newSize);
 
 			mouseX = event.getSceneX();
@@ -91,7 +92,7 @@ public class gameController {
 
 				if (col == 7 && row == 7)
 				{
-					resizeButton = new Button(".");
+					resizeButton = new Button();
 					stackPane.getChildren().add(resizeButton);
 					StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
 					//resizeButton.setPrefSize(stackPane.getHeight()/5, stackPane.getHeight()/5);
@@ -175,9 +176,10 @@ public class gameController {
 	public void showValidMove(Position from) {
 		StackPane sp = (StackPane)getNodeAtPosition(from);
 		Rectangle rectangle = new Rectangle();
-		rectangle.setFill(Color.GREEN);
-		rectangle.widthProperty().bind(sp.widthProperty());
-		rectangle.heightProperty().bind(sp.heightProperty());
+		rectangle.setWidth(gridPane.getWidth() / 8);
+		rectangle.setHeight(gridPane.getHeight() / 8);
+		rectangle.setFill(Color.rgb(0, 255, 0, 0.4));
+
 		sp.getChildren().add(1, rectangle);
 
 		for (int row = 0; row < 8; row++) {
@@ -192,7 +194,7 @@ public class gameController {
 						stackPane.getChildren().add(greenCircle);
 					}
 					else {
-						double radius = 20;
+						double radius = gridPane.getHeight() / 8 / 2.5;
 						Circle circle = new Circle(radius);
 						circle.setStroke(Color.GREEN);
 						circle.setStrokeWidth(3);
@@ -237,6 +239,7 @@ public class gameController {
 				});
 
 				transition.play();
+
 			} else System.out.println("Не имг вью");
 		} else System.out.println("Не стакпейн");
 	}
@@ -277,15 +280,35 @@ public class gameController {
 				imageView.setFitWidth(50);
 				imageView.setFitHeight(50);
 
-				// Установка слушателей изменения размера для ImageView
-				stackPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-					imageView.setFitWidth(newWidth.doubleValue() / 1.2);
-				});
+				gridPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+					for (Node node1 : gridPane.getChildren()) {
+						if (node instanceof StackPane) {
+							StackPane stackPane1 = (StackPane) node1;
 
-				stackPane.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-					imageView.setFitHeight(newHeight.doubleValue() / 1.2);
+							for (Node n : stackPane1.getChildren()) {
+								if (n instanceof ImageView){
+									((ImageView) n).setFitHeight(newWidth.doubleValue() / 8 / 1.2);
+									((ImageView) n).setFitWidth(newWidth.doubleValue() / 8 / 1.2);
+								} else if (n instanceof Label) {
+									((Label) n).setPrefWidth(stackPane1.getWidth() / 2);
+									((Label) n).setPrefHeight(stackPane1.getWidth() / 2);
+								} else if (n instanceof Rectangle) {
+									((Rectangle) n).setHeight(newWidth.doubleValue() / 8);
+									((Rectangle) n).setWidth(newWidth.doubleValue() / 8);
+								} else if (n instanceof Circle) {
+									Circle circle = (Circle) n;
+									if (circle.getFill() != null) {
+										// Заполненный круг
+										circle.setRadius(newWidth.doubleValue() / 8 / 6);
+									} else {
+										// Пустой круг
+										circle.setRadius(newWidth.doubleValue() / 8 / 2.5);
+									}
+								}
+							}
+						}
+					}
 				});
-
 				// Проверка, есть ли уже дочерний узел типа ImageView и удаление его, если есть
 				stackPane.getChildren().removeIf(child -> child instanceof ImageView);
 
