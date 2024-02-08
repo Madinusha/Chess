@@ -190,19 +190,46 @@ public class Chessboard {
 				}
 			}
 		}
-
-		// Проверка наличия фигур на диагональном пути
-		if (Math.abs(from.getRow() - to.getRow()) == Math.abs(from.getColAsNumber() - to.getColAsNumber())) {
-			int startRow = Math.min(from.getRow(), to.getRow());
-			int startCol = Math.min(from.getColAsNumber(), to.getColAsNumber());
-
-			for (int i = 1; i < Math.abs(from.getRow() - to.getRow()); i++) {
-				Position position = new Position(startCol + i, startRow + i);
+		// Проверка наличия фигур на диагональном пути (слева вверх)
+		if (from.getRow() > to.getRow() && from.getColAsNumber() > to.getColAsNumber()) {
+			for (int i = 1; i < from.getRow() - to.getRow(); i++) {
+				Position position = new Position(from.getColAsNumber() - i, from.getRow() - i);
 				if (board.containsKey(position)) {
 					return true; // Есть фигура на пути
 				}
 			}
 		}
+
+		// Проверка наличия фигур на диагональном пути (справа вниз)
+		if (from.getRow() < to.getRow() && from.getColAsNumber() < to.getColAsNumber()) {
+			for (int i = 1; i < to.getRow() - from.getRow(); i++) {
+				Position position = new Position(from.getColAsNumber() + i, from.getRow() + i);
+				if (board.containsKey(position)) {
+					return true; // Есть фигура на пути
+				}
+			}
+		}
+
+		// Проверка наличия фигур на диагональном пути (слева вниз)
+		if (from.getRow() < to.getRow() && from.getColAsNumber() > to.getColAsNumber()) {
+			for (int i = 1; i < to.getRow() - from.getRow(); i++) {
+				Position position = new Position(from.getColAsNumber() - i, from.getRow() + i);
+				if (board.containsKey(position)) {
+					return true; // Есть фигура на пути
+				}
+			}
+		}
+
+		// Проверка наличия фигур на диагональном пути (справа вверх)
+		if (from.getRow() > to.getRow() && from.getColAsNumber() < to.getColAsNumber()) {
+			for (int i = 1; i < from.getRow() - to.getRow(); i++) {
+				Position position = new Position(from.getColAsNumber() + i, from.getRow() - i);
+				if (board.containsKey(position)) {
+					return true; // Есть фигура на пути
+				}
+			}
+		}
+
 		return false; // Фигур нет на пути
 	}
 

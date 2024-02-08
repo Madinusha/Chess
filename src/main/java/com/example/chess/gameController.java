@@ -71,10 +71,9 @@ public class gameController {
 		int numCols = 8;
 
 		System.out.println(chessboard);
-		// Заполнение ячеек для примера
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
-				Position position = new Position(col+1, 8-row);
+				Position position = new Position(col+1, 7-(row+1));
 
 				Label label = new Label();
 				label.setMaxSize(100, 100);
