@@ -1,5 +1,8 @@
 package com.example.chess;
 
+import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,11 +11,14 @@ public class Chessboard {
 
 
 	private Map<Position, Figure> board; // Шахматная доска
+	private gameController controller;
 
-	public Chessboard() {
+	public Chessboard(gameController controller) {
+		this.controller = controller;
 		this.board = new HashMap<>();
 		initialize();
 	}
+
 	public Map<Position, Figure> getChessboard() {
 		return board;
 	}
@@ -145,6 +151,7 @@ public class Chessboard {
 
 					// Проверяем, если это пешка, меняем флаг
 					if (movingFigure instanceof Pawn) {
+						checkPromotion(to);
 						((Pawn) movingFigure).setHasMoved(true);
 					}
 
@@ -156,6 +163,33 @@ public class Chessboard {
 		}
 		return false;
 	}
+	public void checkPromotion(Position position) { // Только для пешек. Проверяет, оказались ли они на противоположном конце доски
+		Figure pawn = getFigureAt(position);
+		if (position.getRow() == 1 && pawn.getColor() == "black"|| position.getRow() == 8 && pawn.getColor() == "white") {
+			controller.displayPromotionMenu(position);
+		}
+	}
+	public void exchangePawn(Position position, String figName)
+	{
+		Figure figure = getFigureAt(position);
+		switch (figName)
+		{
+			case "Queen":
+				figure = new Queen(figure.getColor());
+				break;
+			case "Knight":
+				figure = new Knight(figure.getColor());
+				break;
+			case "Rook":
+				figure = new Rook(figure.getColor());
+				break;
+			case "Bishop":
+				figure = new Bishop(figure.getColor());
+				break;
+		}
+		placeFigure(figure, position);
+	}
+
 	private void figureCapture(Figure capturedFigure) {
 		// код для обработки события съедания фигуры
 		System.out.println("Фигура съедена!");

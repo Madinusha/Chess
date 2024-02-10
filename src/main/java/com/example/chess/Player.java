@@ -8,7 +8,7 @@ public class Player {
 	public Player(String username) {
 		this.username = username;
 		this.score = 0;
-		this.chessBoard = new Chessboard();
+		//this.chessBoard = new Chessboard();
 	}
 
 	public int getScore() {

@@ -5,18 +5,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
 public class gameController {
@@ -48,14 +53,9 @@ public class gameController {
 
 			// Ограничение размеров
 			newWidth = Math.max(minSize, Math.min(newWidth, maxSize));
-			//newHeight = Math.max(minSize, Math.min(newHeight, maxSize));
 
-			// Установка нового размера для GridPane
 			gridPane.setPrefSize(newWidth, newWidth);
 
-			// Установка нового размера для кнопки
-			double stackPaneSize = ((StackPane) resizeButton.getParent()).getHeight();
-			//double newSize = stackPaneSize / 5;
 			double newSize = gridPane.getWidth() / 8 / 5;
 			resizeButton.setPrefSize(newSize, newSize);
 
@@ -65,7 +65,8 @@ public class gameController {
 	}
 	public void createChessboard()
 	{
-		chessboard = new Chessboard();
+		gameController controller = this;
+		chessboard = new Chessboard(controller);
 		// Получите количество строк и столбцов в GridPane
 		int numRows = 8;
 		int numCols = 8;
@@ -94,7 +95,6 @@ public class gameController {
 					resizeButton = new Button();
 					stackPane.getChildren().add(resizeButton);
 					StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
-					//resizeButton.setPrefSize(stackPane.getHeight()/5, stackPane.getHeight()/5);
 				}
 				gridPane.add(stackPane, col, row);
 
@@ -143,6 +143,94 @@ public class gameController {
 			}
 			selectedPosition = null;
 		}
+	}
+	public void displayPromotionMenu(Position position)
+	{
+		for (Node node : gridPane.getChildren()) {
+			node.setDisable(true);
+		}
+		resizeButton.setDisable(false);
+		Button button1 = new Button();
+		Button button2 = new Button();
+		Button button3 = new Button();
+		Button button4 = new Button();
+		List<Button> bList = new ArrayList<>();
+		bList.add(button1);
+		bList.add(button2);
+		bList.add(button3);
+		bList.add(button4);
+
+		Figure figure = chessboard.getFigureAt(position);
+		Image image1 = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/Queen.png"));
+		Image image2 = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/Bishop.png"));
+		Image image3 = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/Rook.png"));
+		Image image4 = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/Knight.png"));
+
+		// Создание объекта ImageView и установка изображения
+		ImageView imageView1 = new ImageView(image1);
+		ImageView imageView2 = new ImageView(image2);
+		ImageView imageView3 = new ImageView(image3);
+		ImageView imageView4 = new ImageView(image4);
+
+		button1.setGraphic(imageView1);
+		button2.setGraphic(imageView2);
+		button3.setGraphic(imageView3);
+		button4.setGraphic(imageView4);
+
+		StackPane stackPane = (StackPane)getNodeAtPosition(position);
+		for (Button button: bList) {
+			button.setPrefHeight(gridPane.getHeight() / 8);
+			button.setPrefWidth(gridPane.getWidth() / 8);
+			button.setAlignment(Pos.CENTER);
+			((ImageView)(button.getGraphic())).setFitWidth(gridPane.getWidth() / 8 / 1.2);
+			((ImageView)(button.getGraphic())).setFitHeight(gridPane.getHeight() / 8 / 1.2);
+			button.getStyleClass().clear();
+			button.setStyle("-fx-background-color: lightyellow;");
+		}
+
+		int dir = (position.getRow() == 1)? -1 : 1;
+
+		gridPane.add(button1, position.getColAsNumber() - 1, 8 - position.getRow());
+		gridPane.add(button2, position.getColAsNumber() - 1, 8 - position.getRow() + dir);
+		gridPane.add(button3, position.getColAsNumber() - 1, 8 - position.getRow() + 2 * dir);
+		gridPane.add(button4, position.getColAsNumber() - 1, 8 - position.getRow() + 3 * dir);
+
+		for (Button button : bList) {
+			int index = bList.indexOf(button);
+			String figNameH = "";
+			if (index == 0) figNameH = "Queen";
+			if (index == 1) figNameH = "Bishop";
+			if (index == 2) figNameH = "Rook";
+			if (index == 3) figNameH = "Knight";
+			final String figName = figNameH;
+			button.setOnAction(event -> {
+				chessboard.exchangePawn(position, figName);
+
+				gridPane.getChildren().removeAll(button1, button2, button3, button4);
+
+				for (Node node : gridPane.getChildren()) {
+					node.setDisable(false);
+				}
+				Node node = getNodeAtPosition(position);
+				for (Node n : ((StackPane)node).getChildren()) {
+					if (n instanceof ImageView)
+					{
+						((StackPane)node).getChildren().add(button.getGraphic());
+						((StackPane)node).getChildren().remove(n);
+						break;
+					}
+				}
+			});
+
+			button.setOnMouseEntered(event -> {
+				button.setStyle("-fx-background-color: orange;");
+			});
+
+			button.setOnMouseExited(event -> {
+				button.setStyle("-fx-background-color: lightyellow;");
+			});
+		}
+
 	}
 	public void hideValidMove(Position from)
 	{
