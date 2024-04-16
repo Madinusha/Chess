@@ -2,20 +2,24 @@ package com.example.chess;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Chessboard {
-
-
 	private Map<Position, Figure> board; // Шахматная доска
 	private gameController controller;
+	private List<Pair<Integer, Figure>> eatenFigures;
+	private List<Pair<Position, Position>> motionList;
 
 	public Chessboard(gameController controller) {
 		this.controller = controller;
 		this.board = new HashMap<>();
+		this.motionList = new ArrayList<>();
+		this.eatenFigures = new ArrayList<>();
 		initialize();
 	}
 
@@ -45,9 +49,18 @@ public class Chessboard {
 			placeFigure(figure, position);
 		}
 	}
-	private void placeFigure(Figure figure, Position position) {
+	public List<Pair<Position, Position>> getMotionList() {
+		return motionList;
+	}
+
+	public List<Pair<Integer, Figure>> getEatenFigures() {
+		return eatenFigures;
+	}
+
+	public void placeFigure(Figure figure, Position position) {
 		board.put(position, figure);
 	}
+	public void deleteFigureAt(Position position) { board.remove(position); }
 
 	private void placeInitialPieces(String color) {
 		int pawnRow = (color.equals("white")) ? 2 : 7;
@@ -148,6 +161,7 @@ public class Chessboard {
 					// Перемещаем фигуру на новую позицию
 					board.remove(from);
 					board.put(to, movingFigure);
+					motionList.add(new Pair<>(from, to));
 
 					// Проверяем, если это пешка, меняем флаг
 					if (movingFigure instanceof Pawn) {
@@ -192,6 +206,7 @@ public class Chessboard {
 
 	private void figureCapture(Figure capturedFigure) {
 		// код для обработки события съедания фигуры
+		eatenFigures.add(new Pair<>(motionList.size(), capturedFigure));
 		System.out.println("Фигура съедена!");
 	}
 

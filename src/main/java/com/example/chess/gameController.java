@@ -12,10 +12,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -56,8 +58,8 @@ public class gameController {
 
 			gridPane.setPrefSize(newWidth, newWidth);
 
-			double newSize = gridPane.getWidth() / 8 / 5;
-			resizeButton.setPrefSize(newSize, newSize);
+//			double newSize = gridPane.getWidth() / 8 / 8;
+//			resizeButton.setPrefSize(newSize, newSize);
 
 			mouseX = event.getSceneX();
 			mouseY = event.getSceneY();
@@ -93,8 +95,22 @@ public class gameController {
 				if (col == 7 && row == 7)
 				{
 					resizeButton = new Button();
+
+					Polygon triangle = new Polygon();
+					triangle.getPoints().addAll(
+							20.0, 20.0,
+							10.0, 20.0,
+							20.0, 10.0
+					);
+					resizeButton.setGraphic(triangle);
+					triangle.setStyle("-fx-fill: brown;");
+					resizeButton.setBackground(null); // Убираем фон кнопки
+					resizeButton.setBorder(null); // Убираем границы кнопки
+					resizeButton.setAlignment(Pos.BOTTOM_RIGHT);
+
 					stackPane.getChildren().add(resizeButton);
 					StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
+					resizeButton.setPrefSize(gridPane.getHeight() / 8 / 8, gridPane.getHeight() / 8 / 8);
 				}
 				gridPane.add(stackPane, col, row);
 
@@ -107,6 +123,14 @@ public class gameController {
 		}
 		placeFiguresSP();
 	}
+
+	// Метод для изменения размеров треугольника
+	private void resizeTriangle(Polygon triangle, double scale) {
+		for (int i = 0; i < triangle.getPoints().size(); i++) {
+			triangle.getPoints().set(i, triangle.getPoints().get(i) * scale);
+		}
+	}
+
 	// Метод для обработки события нажатия на ячейку
 	private void handleCellClick(int row, int col) {
 		System.out.println("Clicked on cell: " + row + ", " + col);
@@ -144,6 +168,8 @@ public class gameController {
 			selectedPosition = null;
 		}
 	}
+	private boolean handleMouseClick = true;
+
 	public void displayPromotionMenu(Position position)
 	{
 		for (Node node : gridPane.getChildren()) {
@@ -220,6 +246,7 @@ public class gameController {
 						break;
 					}
 				}
+				handleMouseClick = false;
 			});
 
 			button.setOnMouseEntered(event -> {
@@ -229,8 +256,56 @@ public class gameController {
 			button.setOnMouseExited(event -> {
 				button.setStyle("-fx-background-color: lightyellow;");
 			});
+
+
+			handleMouseClick = true;
+			gridPane.setOnMouseClicked(event -> {
+				if (handleMouseClick) {
+					// Обработка щелчка мыши на GridPane
+					Node clickedNode = event.getPickResult().getIntersectedNode();
+					if (clickedNode != null && !(clickedNode instanceof Button)) {
+						gridPane.getChildren().removeAll(button1, button2, button3, button4);
+
+						for (Node node : gridPane.getChildren()) {
+							node.setDisable(false);
+						}
+					}
+					Position returningPos = chessboard.getMotionList().get(chessboard.getMotionList().size() - 1).getKey();
+					//Figure returningFigure = chessboard.getEatenFigures().get(chessboard.getEatenFigures().size() - 1).getKey();
+
+
+//					Node spp = getNodeAtPosition(position);
+//					ImageView iv = findImageViewInStackPane((StackPane) spp);
+//					Node returningSp = getNodeAtPosition(returningPos);
+//					((StackPane)returningSp).getChildren().add(iv);
+//
+//
+//					if (returningFigure != null){
+//						chessboard.placeFigure(returningFigure, position);
+//						placeFigure(returningFigure, position);
+//					}
+					placeFigure(figure, returningPos);
+					chessboard.placeFigure(chessboard.getFigureAt(position), returningPos);
+					chessboard.deleteFigureAt(position);
+					System.out.println(chessboard);
+					selectedPosition = null;
+					handleMouseClick = false;
+				}
+			});
 		}
 
+	}
+
+	public void placeFigure(Figure figure, Position position)
+	{
+		Node node = getNodeAtPosition(position);
+		Image image = new Image(getClass().getResourceAsStream("/images/" + figure.getColor() + "/" + figure.getFileName() + ".png"));
+		ImageView imageView = new ImageView();
+		imageView.setFitHeight(gridPane.getHeight() / 8 / 1.2);
+		imageView.setFitWidth(gridPane.getWidth() / 8 / 1.2);
+		imageView.setImage(image);
+
+		((StackPane) node).getChildren().add(imageView);
 	}
 	public void hideValidMove(Position from)
 	{
@@ -259,6 +334,7 @@ public class gameController {
 				}
 			}
 		}
+
 	}
 	public void showValidMove(Position from) {
 		StackPane sp = (StackPane)getNodeAtPosition(from);
@@ -304,13 +380,13 @@ public class gameController {
 			ImageView imageView = findImageViewInStackPane(sourceStackPane);
 
 			if (imageView != null) {
+
 				// Создаем анимацию перемещения ImageView
 				TranslateTransition transition = new TranslateTransition(Duration.millis(200), imageView);
 
 				// Устанавливаем конечные координаты для анимации (новая позиция)
 				transition.setToX(getXCoordinate(from.getColAsNumber(), to.getColAsNumber()));
 				transition.setToY(getYCoordinate(from.getRow(), to.getRow()));
-
 				// Обработчик завершения анимации (если нужно)
 				transition.setOnFinished(event -> {
 					if (chessboard.isEdible(from, to))
@@ -322,7 +398,6 @@ public class gameController {
 					targetStackPane.getChildren().add(imageView);
 					imageView.setTranslateX(0);
 					imageView.setTranslateY(0);
-
 				});
 
 				transition.play();
@@ -369,7 +444,7 @@ public class gameController {
 
 				gridPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
 					for (Node node1 : gridPane.getChildren()) {
-						if (node instanceof StackPane) {
+						if (node1 instanceof StackPane) {
 							StackPane stackPane1 = (StackPane) node1;
 
 							for (Node n : stackPane1.getChildren()) {
@@ -395,6 +470,8 @@ public class gameController {
 							}
 						}
 					}
+					resizeButton.setPrefWidth(newWidth.doubleValue() / 8 / 10);
+					resizeButton.setPrefHeight(newWidth.doubleValue() / 8 / 10);
 				});
 				// Проверка, есть ли уже дочерний узел типа ImageView и удаление его, если есть
 				stackPane.getChildren().removeIf(child -> child instanceof ImageView);
@@ -409,5 +486,4 @@ public class gameController {
 			}
 		}
 	}
-
 }

@@ -2,6 +2,7 @@ package com.example.chess;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -12,15 +13,12 @@ import java.util.List;
 public class HelloChess extends Application {
 	@Override
 	public void start(Stage stage) throws IOException {
-		FXMLLoader fxmlLoader = new FXMLLoader(HelloChess.class.getResource("Game.fxml"));
-		gameController gameController = new gameController();
-		fxmlLoader.setController(gameController);
-		Scene scene = new Scene(fxmlLoader.load());
+		Parent root = FXMLLoader.load(HelloChess.class.getResource("registration.fxml"));
 		stage.setTitle("HelloChess!");
-
-		stage.setScene(scene);
+		stage.setScene(new Scene(root));
 		stage.show();
 	}
+
 
 	public static void main(String[] args) {
 		launch();
