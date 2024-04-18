@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.CheckBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.text.Font?>
-<?import java.awt.Insets?>
-<?import javafx.scene.image.Image?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.registrationController" stylesheets="../styles.css">
-    <children>
-        <VBox layoutX="240.0" layoutY="140.0" spacing="10.0">
+
+<BorderPane maxHeight="600.0" maxWidth="600.0" minHeight="300.0" minWidth="300.0" prefHeight="400.0" prefWidth="335.0" styleClass="borderPane_Style" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.registrationController">
+    <top>
+        <Label text="Добро пожаловать!" textFill="BLACK" BorderPane.alignment="CENTER">
+            <font>
+                <Font size="27.0" />
+            </font>
+            <BorderPane.margin>
+                <Insets top="20.0" />
+            </BorderPane.margin>
+        </Label>
+        <HBox>
+            <Button fx:id="button" mnemonicParsing="false" onMouseClicked="#Login" prefHeight="45.0" prefWidth="140" stylesheets="styles.css" text="Вход">
+                <HBox.margin>
+                    <Insets left="20.0" right="20.0" top="25.0" />
+                </HBox.margin>
+                <font>
+                    <Font size="10.0" />
+                </font>
+            </Button>
+            <Button fx:id="button1" mnemonicParsing="false" onMouseClicked="#Login" prefHeight="45.0" prefWidth="140" stylesheets="styles.css" text="Регистрация">
+                <HBox.margin>
+                    <Insets left="20.0" right="20.0" top="25.0" />
+                </HBox.margin>
+                <font>
+                    <Font size="4.0" />
+                </font>
+            </Button>
+        </HBox>
+
+    </top>
+    <center>
+        <VBox fillWidth="false" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
-                <CheckBox id="reg-log" mnemonicParsing="false" text="Log In " />
-                <Label text="Sign Up">
-                    <font>
-                        <Font size="12.0" />
-                    </font>
-                </Label>
-                <StackPane>
-                    <children>
-                        <StackPane style="-fx-padding: 10;" />
-                        <AnchorPane id="cardPane" maxHeight="400.0" maxWidth="440.0" minHeight="400.0" minWidth="440.0" prefHeight="400.0" prefWidth="440.0">
-                            <children>
-                                <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="380.0" prefWidth="420.0" style="-fx-background-color: #2a2b38; -fx-background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg'); -fx-background-position: bottom center; -fx-background-repeat: no-repeat; -fx-background-size: 300%;">
-                                    <children>
-                                        <StackPane>
-                                            <children>
-                                                <Label layoutX="14.0" layoutY="14.0" text="Log In">
-                                                    <font>
-                                                        <Font size="20.0" />
-                                                    </font>
-                                                </Label>
-                                                <VBox alignment="CENTER" layoutX="55.0" layoutY="70.0" spacing="10.0">
-                                                    <children>
-                                                        <TextField id="logemail" promptText="Your Email" />
-                                                        <TextField id="logpass" promptText="Your Password" />
-                                                        <Label text="submit">
-                                                            <font>
-                                                                <Font size="14.0" />
-                                                            </font>
-                                                        </Label>
-                                                        <Label id="link" text="Forgot your password?">
-                                                            <font>
-                                                                <Font size="12.0" />
-                                                            </font>
-                                                        </Label>
-                                                    </children>
-                                                </VBox>
-                                            </children>
-                                        </StackPane>
-                                    </children>
-                                </AnchorPane>
-                            </children>
-                        </AnchorPane>
-                    </children>
-                </StackPane>
-            </children>
-        </VBox>
-        <AnchorPane layoutX="30.0" layoutY="30.0">
-            <children>
-                <Label layoutX="14.0" layoutY="14.0">
+                <TextField fx:id="text_username" alignment="CENTER" prefHeight="45.0" prefWidth="335.0" promptText="Имя">
+                    <VBox.margin>
+                        <Insets left="20.0" right="20.0" top="60.0" />
+                    </VBox.margin>
                     <font>
                         <Font size="20.0" />
                     </font>
-                </Label>
-                <AnchorPane id="logo" layoutX="30.0" layoutY="30.0" prefHeight="26.0" prefWidth="-1">
-                    <children>
-                        <ImageView fitHeight="26.0" fitWidth="-1" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="https://assets.codepen.io/1462889/fcy.png" />
-                            </image>
-                        </ImageView>
-                    </children>
-                </AnchorPane>
+                </TextField>
+                <PasswordField fx:id="text_password" alignment="CENTER" prefHeight="45.0" prefWidth="335.0" promptText="Пароль">
+                    <VBox.margin>
+                        <Insets left="20.0" right="20.0" top="20.0" />
+                    </VBox.margin>
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </PasswordField>
+                <Button fx:id="button_login" mnemonicParsing="false" onMouseClicked="#Login" prefHeight="45.0" prefWidth="295.0" stylesheets="styles.css" text="Войти">
+                    <VBox.margin>
+                        <Insets left="20.0" right="20.0" top="25.0" />
+                    </VBox.margin>
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Button>
             </children>
-        </AnchorPane>
-    </children>
-</AnchorPane>
+        </VBox>
+    </center>
+</BorderPane>

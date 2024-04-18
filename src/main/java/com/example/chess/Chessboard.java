@@ -1,7 +1,6 @@
 package com.example.chess;
 
-import javafx.fxml.FXML;
-import javafx.geometry.Pos;
+import controller.gameController;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
