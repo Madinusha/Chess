@@ -266,25 +266,25 @@ public class gameController {
 						for (Node node : gridPane.getChildren()) {
 							node.setDisable(false);
 						}
+
+						Position returningPos = chessboard.getMotionList().get(chessboard.getMotionList().size() - 1).getKey();
+						Figure returningFigure = chessboard.getEatenFigures().get(chessboard.getEatenFigures().size() - 1).getValue();
+
+						Node spp = getNodeAtPosition(position);
+						ImageView iv = findImageViewInStackPane((StackPane) spp);
+						((StackPane) spp).getChildren().remove(iv);
+
+
+						chessboard.placeFigure(chessboard.getFigureAt(position), returningPos);
+						placeFigure(figure, returningPos);
+
+						// Возвращаем фигуру, которая была съедена, если такая есть
+						if (returningFigure != null) {
+							chessboard.placeFigure(returningFigure, position);
+							placeFigure(returningFigure, position);
+						}
+
 					}
-					Position returningPos = chessboard.getMotionList().get(chessboard.getMotionList().size() - 1).getKey();
-					//Figure returningFigure = chessboard.getEatenFigures().get(chessboard.getEatenFigures().size() - 1).getKey();
-
-
-//					Node spp = getNodeAtPosition(position);
-//					ImageView iv = findImageViewInStackPane((StackPane) spp);
-//					Node returningSp = getNodeAtPosition(returningPos);
-//					((StackPane)returningSp).getChildren().add(iv);
-//
-//
-//					if (returningFigure != null){
-//						chessboard.placeFigure(returningFigure, position);
-//						placeFigure(returningFigure, position);
-//					}
-					placeFigure(figure, returningPos);
-					chessboard.placeFigure(chessboard.getFigureAt(position), returningPos);
-					chessboard.deleteFigureAt(position);
-					System.out.println(chessboard);
 					selectedPosition = null;
 					handleMouseClick = false;
 				}
