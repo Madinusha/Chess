@@ -68,7 +68,6 @@ public class gameController {
 		// Получите количество строк и столбцов в GridPane
 		int numRows = 8;
 		int numCols = 8;
-
 		System.out.println(chessboard);
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
@@ -77,6 +76,8 @@ public class gameController {
 				Label label = new Label();
 				label.setMaxSize(100, 100);
 
+
+//				if ((row + col) % 2 == 0) {
 				if ((row + col) % 2 == 0) {
 					label.setStyle("-fx-background-color: #F0D9B5;"); // светлая клетка
 				} else {
@@ -376,13 +377,17 @@ public class gameController {
 			ImageView imageView = findImageViewInStackPane(sourceStackPane);
 
 			if (imageView != null) {
+				StackPane animationPane = new StackPane(); // Создаем новый StackPane для анимации
+				animationPane.getChildren().add(imageView); // Добавляем ImageView в новый StackPane
+
 
 				// Создаем анимацию перемещения ImageView
-				TranslateTransition transition = new TranslateTransition(Duration.millis(200), imageView);
+				TranslateTransition transition = new TranslateTransition(Duration.millis(150), animationPane);
 
 				// Устанавливаем конечные координаты для анимации (новая позиция)
 				transition.setToX(getXCoordinate(from.getColAsNumber(), to.getColAsNumber()));
 				transition.setToY(getYCoordinate(from.getRow(), to.getRow()));
+
 				// Обработчик завершения анимации (если нужно)
 				transition.setOnFinished(event -> {
 					if (chessboard.isEdible(from, to))
@@ -394,10 +399,10 @@ public class gameController {
 					targetStackPane.getChildren().add(imageView);
 					imageView.setTranslateX(0);
 					imageView.setTranslateY(0);
+					gridPane.getChildren().remove(animationPane);
 				});
-
+				gridPane.add(animationPane, from.getColAsNumber() - 1, 8 - from.getRow());
 				transition.play();
-
 			} else System.out.println("Не имг вью");
 		} else System.out.println("Не стакпейн");
 	}
