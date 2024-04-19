@@ -10,7 +10,8 @@ import java.util.Map;
 
 public class Chessboard {
 	private Map<Position, Figure> board; // Шахматная доска
-	private gameController controller;
+	public gameController controller;
+
 	private List<Pair<Integer, Figure>> eatenFigures;
 	private List<Pair<Position, Position>> motionList;
 
@@ -54,6 +55,10 @@ public class Chessboard {
 
 	public List<Pair<Integer, Figure>> getEatenFigures() {
 		return eatenFigures;
+	}
+
+	public void addEatenFigures(Figure eatenFigure) {
+		this.eatenFigures.add(new Pair<>(getMotionList().size(), eatenFigure));
 	}
 
 	public void placeFigure(Figure figure, Position position) {
@@ -109,14 +114,11 @@ public class Chessboard {
 		board.clear();
 		initialize();
 	}
-	public boolean isValidMove(Position from, Position to)
-	{
+	public boolean isValidMove(Position from, Position to) {
 		Figure movingFigure = board.get(from);
 		Figure targetFigure = board.get(to);
 		if (movingFigure != null) {
-			// Проверка, что ход допустим для фигуры
 			if (movingFigure.isValidMove(from, to, this)) {
-				// Проверка, что в целевой клетке нет фигуры того же цвета
 				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
 					return true;
 				}
@@ -124,6 +126,14 @@ public class Chessboard {
 		}
 		return false;
 	}
+	public void eatFigure(Position from, Position to)
+	{
+		figureCapture(getFigureAt(to));
+		deleteFigureAt(to);
+		controller.eatFigure(from, to);
+	}
+
+
 	public boolean isEdible(Position from, Position to)
 	{
 		Figure movingFigure = board.get(from);
@@ -153,9 +163,13 @@ public class Chessboard {
 				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
 					// Съедаем фигуру в целевой клетке, если она есть
 					if (targetFigure != null) {
-						// Обработка события съедания фигуры
 						figureCapture(targetFigure);
 					}
+					if (movingFigure instanceof Pawn && ((Pawn) movingFigure).canCaptureEnPassant(from, to, this)) {
+						Pair<Position, Position> lastMove = this.getMotionList().get(this.getMotionList().size() - 1);
+						Position toLastMove = lastMove.getValue();
+						this.eatFigure(from, toLastMove);
+					} else System.out.println("нельзя сделать битое поле");
 
 					// Перемещаем фигуру на новую позицию
 					board.remove(from);
@@ -169,10 +183,10 @@ public class Chessboard {
 					}
 
 					// Вывести информацию о ходе
-					System.out.println("Успех! " + movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
+					System.out.println("Успех! " + movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
 					return true;
-				} else System.out.println(movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " не может есть фигуру своего цвета.");
-			} else System.out.println(movingFigure.getColor() + " "  + movingFigure.getClass().getSimpleName() + " не может сделать ход с " + from + " на " + to);
+				} else System.out.println(movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " не может есть фигуру своего цвета.");
+			}
 		}
 		return false;
 	}

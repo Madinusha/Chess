@@ -290,8 +290,16 @@ public class gameController {
 				}
 			});
 		}
+	}
+	public void eatFigure(Position from, Position to)
+	{
+		Node spp = getNodeAtPosition(to);
+		ImageView iv = findImageViewInStackPane((StackPane) spp);
+		((StackPane) spp).getChildren().remove(iv);
+//		chessboard.eatFigure(from, to);
 
 	}
+
 
 	public void placeFigure(Figure figure, Position position)
 	{
