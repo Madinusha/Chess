@@ -114,25 +114,75 @@ public class Chessboard {
 		board.clear();
 		initialize();
 	}
+
 	public boolean isValidMove(Position from, Position to) {
 		Figure movingFigure = board.get(from);
 		Figure targetFigure = board.get(to);
-		if (movingFigure != null) {
-			if (movingFigure.isValidMove(from, to, this)) {
-				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+
+		if (movingFigure != null && movingFigure.isValidMove(from, to, this)) {
+			// Проверяем, чтобы на клетке, на которую совершается ход, не стояла фигура того же цвета
+			if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+				if (!isMoveLeadsToCheck(from, to, movingFigure)) {
+					System.out.println(from.toString() + " - " + to.toString() + " " + " ведет к шаху? " + isMoveLeadsToCheck(from, to, movingFigure));
 					return true;
 				}
-			}
+			} //else System.out.println(from.toString() + " - " + to.toString() + " " + " ведет к шаху? " + isMoveLeadsToCheck(from, to, movingFigure));
 		}
 		return false;
 	}
+
+	private boolean isMoveLeadsToCheck(Position from, Position to, Figure movingFigure) {
+		Map<Position, Figure> tempBoard = new HashMap<>(board);
+		tempBoard.put(to, tempBoard.remove(from));
+
+		return isKingInCheck(movingFigure.getColor(), tempBoard);
+	}
+	public boolean isKingInCheck(String kingColor, Map<Position, Figure> board) {
+		// Находим позицию короля нужного цвета
+		Position kingPosition = findKingPosition(kingColor, board);
+		if (kingPosition == null) {
+			System.out.println("kingPosition = null");
+			return false;
+		}
+		Chessboard cb = new Chessboard(controller);
+		cb.board = board;
+		// Проходимся по всей доске и проверяем каждую фигуру
+		for (Map.Entry<Position, Figure> entry : board.entrySet()) {
+			Position currentPosition = entry.getKey();
+			Figure currentFigure = cb.getFigureAt(currentPosition);
+
+			// Если фигура принадлежит другому игроку и может атаковать короля, то король находится под шахом
+			if (!currentFigure.getColor().equals(kingColor) && currentFigure.isValidMove(currentPosition, kingPosition, cb)) {
+				return true;
+			}
+		}
+		// Если ни одна фигура не атакует короля, значит, он не под шахом
+		return false;
+	}
+
+	public Position findKingPosition(String kingColor, Map<Position, Figure> board) {
+		System.out.println("Ищем короля ");
+		Chessboard cb = new Chessboard(controller);
+		cb.board = board;
+		for (Map.Entry<Position, Figure> entry : board.entrySet()) {
+			Position position = entry.getKey();
+			Figure figure = cb.getFigureAt(position);
+			if (figure instanceof King){
+				if (figure.getColor().equals(kingColor)) {
+					System.out.println("КОРОЛЬ "  +  position.toString());
+					return position;
+				} else System.out.println("Король не того цвета " +  position.toString());
+			} else System.out.println("Это не король "  +  position.toString());
+		}
+		return null;
+	}
+
 	public void eatFigure(Position from, Position to)
 	{
 		figureCapture(getFigureAt(to));
 		deleteFigureAt(to);
 		controller.eatFigure(from, to);
 	}
-
 
 	public boolean isEdible(Position from, Position to)
 	{
@@ -169,7 +219,7 @@ public class Chessboard {
 						Pair<Position, Position> lastMove = this.getMotionList().get(this.getMotionList().size() - 1);
 						Position toLastMove = lastMove.getValue();
 						this.eatFigure(from, toLastMove);
-					} else System.out.println("нельзя сделать битое поле");
+					}
 
 					// Перемещаем фигуру на новую позицию
 					board.remove(from);
@@ -183,7 +233,7 @@ public class Chessboard {
 					}
 
 					// Вывести информацию о ходе
-					System.out.println("Успех! " + movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to);
+					System.out.println("Успех! " + movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to + "\n");
 					return true;
 				} else System.out.println(movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " не может есть фигуру своего цвета.");
 			}
