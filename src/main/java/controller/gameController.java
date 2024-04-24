@@ -18,9 +18,18 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 
 public class gameController {
 
@@ -401,16 +410,20 @@ public class gameController {
 					if (chessboard.isEdible(from, to))
 					{
 						targetStackPane.getChildren().remove(findImageViewInStackPane(targetStackPane));
-					}
+						playMp3(true);
+					} else playMp3(false);
 					chessboard.moveFigure(from, to);
 					sourceStackPane.getChildren().remove(imageView);
 					targetStackPane.getChildren().add(imageView);
 					imageView.setTranslateX(0);
 					imageView.setTranslateY(0);
 					gridPane.getChildren().remove(animationPane);
+
 				});
 				gridPane.add(animationPane, from.getColAsNumber() - 1, 8 - from.getRow());
+
 				transition.play();
+
 			} else System.out.println("Не имг вью");
 		} else System.out.println("Не стакпейн");
 	}
@@ -421,6 +434,24 @@ public class gameController {
 			}
 		}
 		return null;
+	}
+
+	private void playMp3(Boolean eatFigure) {
+		new Thread(() -> {
+			try {
+				File soundFile = null;
+				if (!eatFigure) {
+					soundFile = new File("C:\\Java\\Chess\\src\\main\\resources\\sounds\\movePiece.wav"); //Звуковой файл
+				} else { soundFile = new File("C:\\Java\\Chess\\src\\main\\resources\\sounds\\eatPiece.wav"); };
+				AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+				Clip clip = AudioSystem.getClip();
+				clip.open(ais);
+				clip.setFramePosition(0); //устанавливаем указатель на старт
+				clip.start();
+			} catch (IOException | UnsupportedAudioFileException | LineUnavailableException exc) {
+				exc.printStackTrace();
+			}
+		}).start();
 	}
 
 	private Node getNodeAtPosition(Position position) {
