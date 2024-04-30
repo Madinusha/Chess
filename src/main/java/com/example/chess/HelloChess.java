@@ -20,7 +20,7 @@ public class HelloChess extends Application {
 		stage.setScene(new Scene(root));
 		stage.show();
 	}
-//
+
 //	@Override
 //	public void start(Stage stage) throws IOException {
 //		BorderPane root = FXMLLoader.load(getClass().getResource("registration.fxml"));

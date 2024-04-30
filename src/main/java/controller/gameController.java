@@ -86,7 +86,6 @@ public class gameController {
 				label.setMaxSize(100, 100);
 
 
-//				if ((row + col) % 2 == 0) {
 				if ((row + col) % 2 == 0) {
 					label.setStyle("-fx-background-color: #F0D9B5;"); // светлая клетка
 				} else {
@@ -167,7 +166,7 @@ public class gameController {
 					return;
 				}
 			hideValidMove(selectedPosition);
-			if (chessboard.isValidMove(selectedPosition, targetPosition)) {
+			if (chessboard.isValidMove(selectedPosition, targetPosition, chessboard)) {
 				moveFigure(selectedPosition, targetPosition);
 				System.out.println(selectedPosition + " " + targetPosition);
 			}
@@ -356,6 +355,7 @@ public class gameController {
 		rectangle.setWidth(gridPane.getWidth() / 8);
 		rectangle.setHeight(gridPane.getHeight() / 8);
 		rectangle.setFill(Color.rgb(0, 255, 0, 0.4));
+		System.out.println("PossibleMoves " + chessboard.getPossibleMoves(from, chessboard));
 
 		sp.getChildren().add(1, rectangle);
 
@@ -364,7 +364,7 @@ public class gameController {
 				Position to = new Position(col + 1, 8 - row);
 				StackPane stackPane = (StackPane)getNodeAtPosition(to);
 				Figure figureTo = chessboard.getFigureAt(to);
-				if (chessboard.isValidMove(from, to)) {
+				if (chessboard.isValidMove(from, to, chessboard)) {
 					if (figureTo == null) {
 						double radius = stackPane.getHeight() / 6;
 						Circle greenCircle = new Circle(radius, Color.GREEN);
@@ -439,10 +439,13 @@ public class gameController {
 	private void playMp3(Boolean eatFigure) {
 		new Thread(() -> {
 			try {
-				File soundFile = null;
+				File soundFile;
 				if (!eatFigure) {
-					soundFile = new File("C:\\Java\\Chess\\src\\main\\resources\\sounds\\movePiece.wav"); //Звуковой файл
-				} else { soundFile = new File("C:\\Java\\Chess\\src\\main\\resources\\sounds\\eatPiece.wav"); };
+					soundFile = new File(getClass().getResource("/sounds/movePiece.wav").getFile());
+				} else {
+					soundFile = new File(getClass().getResource("/sounds/eatPiece.wav").getFile());
+				}
+
 				AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
 				Clip clip = AudioSystem.getClip();
 				clip.open(ais);
@@ -479,8 +482,8 @@ public class gameController {
 
 				// Создание нового ImageView
 				ImageView imageView = new ImageView();
-				imageView.setFitWidth(50);
-				imageView.setFitHeight(50);
+				imageView.setFitWidth(gridPane.getWidth() / 8 / 1.2);
+				imageView.setFitHeight(gridPane.getWidth() / 8 / 1.2);
 
 				gridPane.widthProperty().addListener((obs, oldWidth, newWidth) -> {
 					for (Node node1 : gridPane.getChildren()) {
