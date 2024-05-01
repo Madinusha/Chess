@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,18 +54,14 @@ public class gameController {
 			double minSize = 250;
 			double deltaX = event.getSceneX() - mouseX;
 			double deltaY = event.getSceneY() - mouseY;
-			double detalMax = Math.max(deltaX, deltaY);
+			double deltaMax = Math.max(deltaX, deltaY);
 
-			double newWidth = gridPane.getWidth() + detalMax;
-			double newHeight = gridPane.getHeight() + detalMax;
+			double newWidth = gridPane.getWidth() + deltaMax;
 
 			// Ограничение размеров
 			newWidth = Math.max(minSize, Math.min(newWidth, maxSize));
 
 			gridPane.setPrefSize(newWidth, newWidth);
-
-//			double newSize = gridPane.getWidth() / 8 / 8;
-//			resizeButton.setPrefSize(newSize, newSize);
 
 			mouseX = event.getSceneX();
 			mouseY = event.getSceneY();
@@ -84,7 +81,6 @@ public class gameController {
 
 				Label label = new Label();
 				label.setMaxSize(100, 100);
-
 
 				if ((row + col) % 2 == 0) {
 					label.setStyle("-fx-background-color: #F0D9B5;"); // светлая клетка
@@ -158,7 +154,7 @@ public class gameController {
 				return;
 			}
 			if (figure1 != null && figure2 != null)
-				if (figure1.getColor() == figure2.getColor())
+				if (figure1.getColor().equals(figure2.getColor()))
 				{
 					hideValidMove(selectedPosition);
 					selectedPosition = targetPosition;
@@ -167,6 +163,11 @@ public class gameController {
 				}
 			hideValidMove(selectedPosition);
 			if (chessboard.isValidMove(selectedPosition, targetPosition, chessboard)) {
+				Pair<Position, Position> rookPositions = chessboard.isCastleMove(selectedPosition, targetPosition, chessboard);
+				if(rookPositions != null){
+					System.out.println("рокировка " + rookPositions.getKey() + " " + rookPositions.getValue());
+					moveFigure(rookPositions.getKey(), rookPositions.getValue());
+				} else System.out.println("rookPositions == NULL");
 				moveFigure(selectedPosition, targetPosition);
 				System.out.println(selectedPosition + " " + targetPosition);
 			}
@@ -278,6 +279,10 @@ public class gameController {
 						Position returningPos = chessboard.getMotionList().get(chessboard.getMotionList().size() - 1).getKey();
 						Figure returningFigure = chessboard.getEatenFigures().get(chessboard.getEatenFigures().size() - 1).getValue();
 
+						if (chessboard.getEatenFigures().get(chessboard.getEatenFigures().size() - 1).getKey() != chessboard.getMotionList().size()-1){
+							returningFigure = null;
+						}
+
 						Node spp = getNodeAtPosition(position);
 						ImageView iv = findImageViewInStackPane((StackPane) spp);
 						((StackPane) spp).getChildren().remove(iv);
@@ -295,6 +300,13 @@ public class gameController {
 					}
 					selectedPosition = null;
 					handleMouseClick = false;
+
+					String color = figure.getColor().equals("white")? "black" : "white";
+					// Проверяем на мат
+					if (chessboard.isCheckmate(color, chessboard.getChessboard())) {
+						chessboard.showWinMessage(figure.getColor());
+						System.out.println("Игра окончена. Шах и мат!");
+					}
 				}
 			});
 		}
@@ -355,7 +367,6 @@ public class gameController {
 		rectangle.setWidth(gridPane.getWidth() / 8);
 		rectangle.setHeight(gridPane.getHeight() / 8);
 		rectangle.setFill(Color.rgb(0, 255, 0, 0.4));
-		System.out.println("PossibleMoves " + chessboard.getPossibleMoves(from, chessboard));
 
 		sp.getChildren().add(1, rectangle);
 
@@ -396,7 +407,6 @@ public class gameController {
 			if (imageView != null) {
 				StackPane animationPane = new StackPane(); // Создаем новый StackPane для анимации
 				animationPane.getChildren().add(imageView); // Добавляем ImageView в новый StackPane
-
 
 				// Создаем анимацию перемещения ImageView
 				TranslateTransition transition = new TranslateTransition(Duration.millis(150), animationPane);

@@ -1,7 +1,6 @@
 package com.example.chess;
 
 import controller.gameController;
-import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.util.Pair;
 
@@ -64,11 +63,50 @@ public class Chessboard {
 		this.motionList = newBoard.getMotionList();
 		this.eatenFigures = newBoard.getEatenFigures();
 	}
+
+	public Chessboard copyChessboard(Chessboard originalBoard) {
+		Chessboard copiedBoard = new Chessboard(originalBoard.controller);
+
+		// Проходимся по каждой клетке на доске
+		for (Map.Entry<Position, Figure> entry : originalBoard.getChessboard().entrySet()) {
+			Position position = entry.getKey();
+			Figure originalFigure = entry.getValue();
+
+			// Создаем новый объект фигуры и добавляем его на клетку в новой доске
+			Figure copiedFigure = createCopyOfFigure(originalFigure);
+			copiedBoard.getChessboard().put(position, copiedFigure);
+		}
+
+		// Копируем список съеденных фигур
+		copiedBoard.getEatenFigures().addAll(originalBoard.getEatenFigures());
+
+		return copiedBoard;
+	}
+
+	private Figure createCopyOfFigure(Figure originalFigure) {
+		if (originalFigure instanceof Pawn) {
+			Pawn newPawn = new Pawn(originalFigure.getColor());
+			if (((Pawn) originalFigure).getHasMoved()) newPawn.setHasMoved();
+			return newPawn;
+		} else if (originalFigure instanceof King) {
+			King newKing = new King(originalFigure.getColor());
+			if (((King) originalFigure).getHasMoved()) newKing.setHasMoved();
+			if (((King) originalFigure).getHasChecked()) newKing.setHasChecked();
+			return newKing;
+		} else if (originalFigure instanceof Rook) {
+			Rook newRook = new Rook(originalFigure.getColor());
+			if (((Rook) originalFigure).getHasMoved()) newRook.setHasMoved();
+			return newRook;
+		} else
+			if (originalFigure instanceof Queen) return new Queen(originalFigure.getColor());
+			else if (originalFigure instanceof Knight) return new Knight(originalFigure.getColor());
+			else if (originalFigure instanceof Bishop) return new Bishop(originalFigure.getColor());
+
+		return null;
+	}
+
 	public List<Pair<Position, Position>> getMotionList() {
 		return motionList;
-	}
-	public void appendInMotionList(Position from, Position to) {
-		motionList.add(new Pair<>(from, to));
 	}
 
 	public List<Pair<Integer, Figure>> getEatenFigures() {
@@ -140,14 +178,21 @@ public class Chessboard {
 		if (movingFigure != null && movingFigure.isValidMove(from, to, this)) {
 			// Проверяем, чтобы на клетке, на которую совершается ход, не стояла фигура того же цвета
 			if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+				// Проверяем, не приводит ли ход к шаху
 				if (!isMoveLeadsToCheck(from, to, movingFigure)) {
 					return true;
 				}
 			}
 		}
+		if (isCastleMove(from, to, board) != null) {
+			System.out.println("Можно сделать рокировку");
+			// Выполняем проверку на возможность рокировки и возвращаем результат
+			return true;
+		}
 		return false;
 	}
-	private void showWinMessage(String winner) {
+
+	public void showWinMessage(String winner) {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Поздравляем!");
 		alert.setHeaderText(null);
@@ -158,9 +203,7 @@ public class Chessboard {
 			controller.initialize();
 		});
 		alert.show();
-
 	}
-
 
 	private boolean isMoveLeadsToCheck(Position from, Position to, Figure movingFigure) {
 		Map<Position, Figure> tempBoard = new HashMap<>(board);
@@ -185,7 +228,8 @@ public class Chessboard {
 
 			// Если фигура принадлежит другому игроку и может атаковать короля, то король находится под шахом
 			if (!currentFigure.getColor().equals(kingColor) && currentFigure.isValidMove(currentPosition, kingPosition, cb)) {
-				System.out.println("фигура " + currentFigure.getFileName() + " принадлежит другому игроку и может атаковать короля, ШАХ королю цвета " + cb.getFigureAt(kingPosition).getColor() + cb.getFigureAt(kingPosition).getFileName());
+				//System.out.println("фигура " + currentFigure.getFileName() + " принадлежит другому игроку и может атаковать короля, ШАХ королю цвета " + cb.getFigureAt(kingPosition).getColor() + cb.getFigureAt(kingPosition).getFileName());
+				((King)cb.getFigureAt(kingPosition)).setHasChecked();
 				return true;
 			}
 		}
@@ -230,7 +274,6 @@ public class Chessboard {
 							return false;
 						}
 					}
-					//return false;
 				}
 			}
 			// Если не найдено ни одного хода, который бы предотвратил шах, то это мат
@@ -249,7 +292,6 @@ public class Chessboard {
 		// Проходимся по всем клеткам на доске
 		for (int row = 1; row <= 8; row++) {
 			for (int col = 1; col <= 8; col++) {
-				Figure figure = myfigure;
 				Position targetPosition = new Position(row, col);
 
 				// Проверяем, может ли текущая фигура совершить ход на целевую позицию
@@ -266,7 +308,6 @@ public class Chessboard {
 				}
 			}
 		}
-
 		return possibleMoves;
 	}
 
@@ -286,6 +327,68 @@ public class Chessboard {
 		}
 		return null;
 	}
+
+	public Pair<Position, Position> isCastleMove(Position from, Position to, Chessboard board) {
+		// Получаем короля и ладью
+		Figure king = board.getFigureAt(from);
+		if (to.getColAsNumber() != 3 && to.getColAsNumber() != 7) return null;
+
+		// Проверяем, является ли фигура королем
+		if (!(king instanceof King)) {
+			return null;
+		}
+		if (((King) king).getHasChecked()) return null;
+		if (from.getRow() != to.getRow()) return null;
+
+		// Позиция целевой ладьи
+		int rookRow = from.getRow();
+		int rookCol = 8 - to.getColAsNumber() == 1? 8: 1;
+
+		Position rookPosition = new Position(rookCol, rookRow);
+		Figure rook = board.getFigureAt(rookPosition);
+		System.out.println("king = " + king);
+		System.out.println("rook = " + rook);
+
+		// Проверяем, находится ли король в начальной позиции
+		if (((King)king).getHasMoved() || ((Rook)rook).getHasMoved()) {
+			return null;
+		}
+		if (board.areFiguresBetween(from, rookPosition)) {
+			return null;
+		}
+
+		Position currentKingPos = from;
+		int dir = from.getColAsNumber() > to.getColAsNumber()? -1: 1;
+//		Chessboard tempBoard = new Chessboard(board.getChessboard());
+		Chessboard tempBoard = copyChessboard(board);
+		while (currentKingPos.getColAsNumber() != to.getColAsNumber())
+		{
+			System.out.println(currentKingPos.getColAsNumber() + " " + to.getColAsNumber());
+			// Проверяем, не находится ли король под шахом на этой позиции
+			if (tempBoard.isKingInCheck(king.getColor(), tempBoard.getChessboard())) {
+				System.out.println("Во время рокировки король находится под шахом в позиции " + currentKingPos);
+				return null; // Позиция находится под шахом
+			}
+
+			Position nextPosition = new Position(currentKingPos.getColAsNumber() + dir, from.getRow());
+			System.out.println("currentKingPos " + currentKingPos + " " + nextPosition);
+
+			tempBoard.moveFigure(currentKingPos, nextPosition, tempBoard);
+
+			currentKingPos = nextPosition;
+			System.out.println("tempBoard");
+			System.out.println(tempBoard);
+
+		}
+		System.out.println("основная доска");
+		System.out.println(board);
+
+		int futureRookCol = 8 - to.getColAsNumber() == 1? 6: 4;
+		Position futureRookPos = new Position(futureRookCol, from.getRow());
+		System.out.println("Все условия для рокировки выполнены, позиции ладьи для рокировки: "+ rookPosition + " -> " + futureRookPos);
+		return new Pair<>(rookPosition, futureRookPos);
+	}
+
 
 	public void eatFigure(Position from, Position to)
 	{
@@ -318,53 +421,47 @@ public class Chessboard {
 	public boolean moveFigure(Position from, Position to, Chessboard board) {
 		Figure movingFigure = board.getFigureAt(from);
 		Figure targetFigure = board.getFigureAt(to);
-
 		if (movingFigure != null) {
-			// Проверка, что ход допустим для фигуры
-			if (movingFigure.isValidMove(from, to, board)) {
-				// Проверка, что в целевой клетке нет фигуры того же цвета
-				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
-					// Съедаем фигуру в целевой клетке, если она есть
-					if (targetFigure != null) {
-						figureCapture(targetFigure);
-					}
-					if (movingFigure instanceof Pawn && ((Pawn) movingFigure).canCaptureEnPassant(from, to, board)) {
-						Pair<Position, Position> lastMove = board.getMotionList().get(board.getMotionList().size() - 1);
-						Position toLastMove = lastMove.getValue();
-						this.eatFigure(from, toLastMove);
-					}
-
-					// Перемещаем фигуру на новую позицию
-					board.getChessboard().remove(from);
-					board.getChessboard().put(to, movingFigure);
-					board.motionList.add(new Pair<>(from, to));
-
-					// Проверяем, если это пешка, меняем флаг
-					if (movingFigure instanceof Pawn) {
-						checkPromotion(to);
-						((Pawn) movingFigure).setHasMoved(true);
-					}
-
-					// Вывести информацию о ходе
-					System.out.println("Успех! " + movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to + "\n");
-
-					String color = movingFigure.getColor().equals("white")? "black" : "white";
-					// Проверяем на мат
-					if (isCheckmate(color, board.getChessboard())) {
-						showWinMessage(movingFigure.getColor());
-						System.out.println("Игра окончена. Шах и мат!");
-					}
-
-					return true;
-				} else System.out.println(movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " не может есть фигуру своего цвета.");
+			if (targetFigure != null) {
+				figureCapture(targetFigure);
 			}
+			if (movingFigure instanceof Pawn && ((Pawn) movingFigure).canCaptureEnPassant(from, to, board)) {
+				Pair<Position, Position> lastMove = board.getMotionList().get(board.getMotionList().size() - 1);
+				Position toLastMove = lastMove.getValue();
+				this.eatFigure(from, toLastMove);
+			}
+
+			// Перемещаем фигуру на новую позицию
+			board.getChessboard().remove(from);
+			board.getChessboard().put(to, movingFigure);
+			board.motionList.add(new Pair<>(from, to));
+
+			// Проверяем, если это пешка, меняем флаг
+			if (movingFigure instanceof Pawn) {
+				checkPromotion(to);
+				((Pawn) movingFigure).setHasMoved();
+			}
+			if (movingFigure instanceof King) ((King) movingFigure).setHasMoved();
+			if (movingFigure instanceof Rook) ((Rook) movingFigure).setHasMoved();
+			// Вывести информацию о ходе
+			System.out.println("Успех! " + movingFigure.getColor() + " " + movingFigure.getClass().getSimpleName() + " сделал ход с " + from + " на " + to + "\n");
+
+			String color = movingFigure.getColor().equals("white")? "black" : "white";
+			// Проверяем на мат
+			if (isCheckmate(color, board.getChessboard())) {
+				showWinMessage(movingFigure.getColor());
+				System.out.println("Игра окончена. Шах и мат!");
+			}
+
+			return true;
 		}
+
 		return false;
 	}
 
 	public void checkPromotion(Position position) { // Только для пешек. Проверяет, оказались ли они на противоположном конце доски
 		Figure pawn = getFigureAt(position);
-		if (position.getRow() == 1 && pawn.getColor() == "black"|| position.getRow() == 8 && pawn.getColor() == "white") {
+		if (position.getRow() == 1 && pawn.getColor().equals("black")|| position.getRow() == 8 && pawn.getColor().equals("white")) {
 			controller.displayPromotionMenu(position);
 		}
 	}
@@ -392,7 +489,7 @@ public class Chessboard {
 	private void figureCapture(Figure capturedFigure) {
 		// код для обработки события съедания фигуры
 		eatenFigures.add(new Pair<>(motionList.size(), capturedFigure));
-		System.out.println("Фигура " + capturedFigure + " съедена!");
+		System.out.println("Фигура " + capturedFigure.getFileName() + " съедена!");
 	}
 
 	public Figure getFigureAt(Position position) {

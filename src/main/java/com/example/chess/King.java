@@ -1,8 +1,24 @@
 package com.example.chess;
 
 public class King extends Figure{
+	private boolean hasMoved;
+	private boolean hasChecked;
 	public King(String color) {
 		super(color);
+		this.hasMoved = false;
+		this.hasChecked = false;
+	}
+	public boolean getHasMoved() {
+		return hasMoved;
+	}
+	public boolean getHasChecked() {
+		return hasChecked;
+	}
+	public void setHasMoved() {
+		this.hasMoved = true;
+	}
+	public void setHasChecked() {
+		this.hasChecked = true;
 	}
 
 	@Override

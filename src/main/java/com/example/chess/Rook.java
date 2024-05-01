@@ -1,8 +1,16 @@
 package com.example.chess;
 
 public class Rook extends Figure { // Ладья
+	private boolean hasMoved;
 	public Rook(String color) {
 		super(color);
+		this.hasMoved = false;
+	}
+	public boolean getHasMoved() {
+		return hasMoved;
+	}
+	public void setHasMoved() {
+		this.hasMoved = true;
 	}
 
 	@Override

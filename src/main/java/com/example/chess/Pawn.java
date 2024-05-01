@@ -13,8 +13,8 @@ public class Pawn extends Figure {
 		return hasMoved;
 	}
 
-	public void setHasMoved(boolean hasMoved) {
-		this.hasMoved = hasMoved;
+	public void setHasMoved() {
+		this.hasMoved = true;
 	}
 
 	@Override
@@ -54,7 +54,6 @@ public class Pawn extends Figure {
 	public boolean canCaptureEnPassant(Position from, Position to, Chessboard board) {
 		if (board.getMotionList().size() != 0) {
 			Figure movingPawn = board.getFigureAt(from);
-			Figure targetPawn = board.getFigureAt(to);
 
 			// Получаем последний совершенный ход
 			Pair<Position, Position> lastMove = board.getMotionList().get(board.getMotionList().size() - 1);
