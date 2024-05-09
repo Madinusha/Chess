@@ -1,6 +1,6 @@
 .borderPane_Style {
     -fx-background-color: linear-gradient(to right bottom, #002151, #00215c, #052066, #141d70, #241878);
-    -fx-background-color: white;
+    -fx-background-color: #F0D9B5;
 }
 /*
 .button {
@@ -45,21 +45,21 @@
     -fx-justify-content: center;
     -fx-text-alignment: center;
     -fx-border-color: transparent;
-    -fx-background-color: #ffeba7;
-    -fx-text-fill: #102770;
+    -fx-background-color: #B58863;
+    -fx-text-fill: #F0D9B5;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.6) , 10, 0.5 , 0 , 2 );
     -fx-transition: all 0.2s linear;
 }
 
 .button:pressed,
 .button:focused {
-    -fx-background-color: #102770;
-    -fx-text-fill: #ffeba7;
+    -fx-background-color: pink;
+    -fx-text-fill: #B58863;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.6) , 10, 0.5 , 0 , 2 );
 }
 
 .button:hover {
-    -fx-background-color: #102770;
-    -fx-text-fill: #ffeba7;
+    -fx-background-color: pink;
+    -fx-text-fill: #B58863;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.6) , 10, 0.5 , 0 , 2 );
 }

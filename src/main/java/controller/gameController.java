@@ -2,6 +2,7 @@ package controller;
 
 import com.example.chess.Chessboard;
 import com.example.chess.Figure;
+import com.example.chess.Player;
 import com.example.chess.Position;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,9 +42,13 @@ public class gameController {
 	private Position selectedPosition;
 	private double mouseX, mouseY;
 	public Chessboard chessboard;
+	private Player player;
 
 	@FXML
 	public void initialize() {
+		player = new Player("1");
+		player.setColor("black");
+
 		createChessboard();
 		// Установка слушателей событий мыши для кнопки
 		resizeButton.setOnMousePressed(event -> {
@@ -74,6 +80,11 @@ public class gameController {
 		// Получите количество строк и столбцов в GridPane
 		int numRows = 8;
 		int numCols = 8;
+
+		if (player.getColor().equals("black")) {
+			gridPane.setRotate(180);
+		}
+
 		System.out.println(chessboard);
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
@@ -93,27 +104,10 @@ public class gameController {
 				StackPane stackPane = new StackPane();
 				stackPane.getChildren().add(label);
 
-				if (col == 7 && row == 7)
-				{
-					resizeButton = new Button();
-
-					Polygon triangle = new Polygon();
-					triangle.getPoints().addAll(
-							20.0, 20.0,
-							10.0, 20.0,
-							20.0, 10.0
-					);
-					resizeButton.setGraphic(triangle);
-					triangle.setStyle("-fx-fill: brown;");
-					resizeButton.setBackground(null); // Убираем фон кнопки
-					resizeButton.setBorder(null); // Убираем границы кнопки
-					resizeButton.setAlignment(Pos.BOTTOM_RIGHT);
-
-					stackPane.getChildren().add(resizeButton);
-					StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
-					resizeButton.setPrefSize(gridPane.getHeight() / 8 / 8, gridPane.getHeight() / 8 / 8);
-				}
 				gridPane.add(stackPane, col, row);
+				if (player.getColor().equals("black")) {
+					stackPane.setRotate(180);
+				}
 
 				Node cellNode = gridPane.getChildren().get(row * numCols + col);
 				int finalRow = row;
@@ -122,6 +116,30 @@ public class gameController {
 				cellNode.setOnMouseClicked(event -> handleCellClick(finalRow, finalCol));
 			}
 		}
+		StackPane stackPane;
+		if (player.getColor().equals("black")) stackPane = (StackPane) getNodeAtPosition(new Position(1, 8));
+		else stackPane = (StackPane) getNodeAtPosition(new Position(8, 1));
+
+		resizeButton = new Button();
+		Polygon triangle = new Polygon();
+		triangle.getPoints().addAll(
+				20.0, 20.0,
+				10.0, 20.0,
+				20.0, 10.0
+		);
+		resizeButton.setGraphic(triangle);
+		triangle.setStyle("-fx-fill: brown;");
+		resizeButton.setBackground(null); // Убираем фон кнопки
+		resizeButton.setBorder(null); // Убираем границы кнопки
+
+		resizeButton.setAlignment(Pos.BOTTOM_RIGHT);
+
+		stackPane.getChildren().add(resizeButton);
+		StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
+		resizeButton.setPrefSize(gridPane.getHeight() / 8 / 8, gridPane.getHeight() / 8 / 8);
+		//resizeButton.setStyle("-fx-cursor: ew-resize;");
+
+
 		placeFiguresSP();
 	}
 
@@ -407,7 +425,9 @@ public class gameController {
 			if (imageView != null) {
 				StackPane animationPane = new StackPane(); // Создаем новый StackPane для анимации
 				animationPane.getChildren().add(imageView); // Добавляем ImageView в новый StackPane
-
+				if (player.getColor().equals("black")) {
+					animationPane.setRotate(180);
+				}
 				// Создаем анимацию перемещения ImageView
 				TranslateTransition transition = new TranslateTransition(Duration.millis(150), animationPane);
 

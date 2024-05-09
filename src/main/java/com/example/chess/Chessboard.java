@@ -175,19 +175,23 @@ public class Chessboard {
 		Figure movingFigure = board.getFigureAt(from);
 		Figure targetFigure = board.getFigureAt(to);
 
-		if (movingFigure != null && movingFigure.isValidMove(from, to, this)) {
-			// Проверяем, чтобы на клетке, на которую совершается ход, не стояла фигура того же цвета
-			if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
-				// Проверяем, не приводит ли ход к шаху
-				if (!isMoveLeadsToCheck(from, to, movingFigure)) {
-					return true;
+		// Проверяем, фигурам какого цвета сейчас можно ходить
+		if ((board.getMotionList().isEmpty() && movingFigure.getColor().equals("white")) ||
+				(!board.getMotionList().isEmpty() && !board.getFigureAt(getMotionList().get(getMotionList().size() - 1).getValue()).getColor().equals(movingFigure.getColor()))) {
+			if (movingFigure != null && movingFigure.isValidMove(from, to, this)) {
+				// Проверяем, чтобы на клетке, на которую совершается ход, не стояла фигура того же цвета
+				if (targetFigure == null || !targetFigure.getColor().equals(movingFigure.getColor())) {
+					// Проверяем, не приводит ли ход к шаху
+					if (!isMoveLeadsToCheck(from, to, movingFigure)) {
+						return true;
+					}
 				}
 			}
-		}
-		if (isCastleMove(from, to, board) != null) {
-			System.out.println("Можно сделать рокировку");
-			// Выполняем проверку на возможность рокировки и возвращаем результат
-			return true;
+			if (isCastleMove(from, to, board) != null) {
+				System.out.println("Можно сделать рокировку");
+				return true;
+			}
+			return false;
 		}
 		return false;
 	}
@@ -200,6 +204,7 @@ public class Chessboard {
 
 		alert.setOnCloseRequest(event -> {
 			controller.gridPane.getChildren().clear();
+			// Здесь нужно выйти в главное меню
 			controller.initialize();
 		});
 		alert.show();
@@ -215,8 +220,6 @@ public class Chessboard {
 		// Находим позицию короля нужного цвета
 		Position kingPosition = findKingPosition(kingColor, board);
 		if (kingPosition == null) {
-			System.out.println("kingPosition = null");
-			System.out.println("ПРОИГРЫШ");
 			return false;
 		}
 		Chessboard cb = new Chessboard(controller);
@@ -238,7 +241,6 @@ public class Chessboard {
 	}
 
 	public boolean isCheckmate(String kingColor, Map<Position, Figure> board) {
-		System.out.println("\t\t\t вызов checkmate");
 		// Проверяем, находится ли король нужного цвета под шахом
 		if (isKingInCheck(kingColor, board)) {
 			System.out.println("\t\t\t король " + kingColor + " под шахом ");
@@ -254,23 +256,22 @@ public class Chessboard {
 
 					// Получаем список всех возможных ходов для текущей фигуры
 					List<Position> possibleMoves = getPossibleMoves(currentPosition, cb);
-					if (possibleMoves.isEmpty()) {
-						System.out.println("\t\t\t\tpossibleMoves == null для фигуры " + getFigureAt(currentPosition).getFileName() + " " + currentPosition);
-						continue;
-						//return true;
-					}
-					else {
-						System.out.println("possibleMoves: ");
-						for (Position position : possibleMoves) {
-							System.out.print("\t\t\t" + position + " ");
-						}
-						System.out.println();
-					}
+//					if (possibleMoves.isEmpty()) {
+//						continue;
+//						//return true;
+//					}
+//					else {
+//						System.out.println("possibleMoves: ");
+//						for (Position position : possibleMoves) {
+//							System.out.print("\t\t\t" + position + " ");
+//						}
+//						System.out.println();
+//					}
 
 					// Проходимся по каждому возможному ходу
 					for (Position move : possibleMoves) {
 						if (!cb.isMoveLeadsToCheck(currentPosition, move, currentFigure)){
-							System.out.println(" ход ведет к шаху у фигуры " + cb.getFigureAt(currentPosition) + " " + move);
+							//System.out.println(" ход ведет к шаху у фигуры " + cb.getFigureAt(currentPosition) + " " + move);
 							return false;
 						}
 					}
@@ -285,7 +286,6 @@ public class Chessboard {
 	public List<Position> getPossibleMoves(Position currentPosition, Chessboard board) {
 		List<Position> possibleMoves = new ArrayList<>();
 		Figure myfigure = board.getFigureAt(currentPosition);
-		System.out.println("\t\t\t вызываем getPossibleMoves");
 		// Получаем цвет текущей фигуры
 		String color = myfigure.getColor();
 
@@ -359,7 +359,6 @@ public class Chessboard {
 
 		Position currentKingPos = from;
 		int dir = from.getColAsNumber() > to.getColAsNumber()? -1: 1;
-//		Chessboard tempBoard = new Chessboard(board.getChessboard());
 		Chessboard tempBoard = copyChessboard(board);
 		while (currentKingPos.getColAsNumber() != to.getColAsNumber())
 		{

@@ -1,16 +1,28 @@
 package com.example.chess;
 
 import java.util.List;
+import java.util.Random;
 
 public class Game {
-	private Player player1;
-	private Player player2;
-	private List<Chessboard> boardsList;
+	private Player white;
+	private Player black;
+	private Chessboard chessboard;
 
 	public Game(Player player1, Player player2) {
-		this.player1 = player1;
-		this.player2 = player2;
-//		this.boardsList = new Chessboard();
+		Random rand = new Random();
+		int rand_color = rand.nextInt(2);
+		if (rand_color == 0) {
+			this.white = player1;
+			player1.setColor("white");
+			this.black = player2;
+			player2.setColor("black");
+		} else {
+			this.white = player2;
+			player2.setColor("white");
+			this.black = player1;
+			player1.setColor("black");
+		}
+
 	}
 
 	public void startGame() {

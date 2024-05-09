@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="628.0" prefWidth="818.0" spacing="20.0" style="-fx-background-color: pink;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.startPageController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <Button fx:id="playButton" mnemonicParsing="false" onAction="#Login" prefHeight="45.0" prefWidth="202.0" style="-fx-background-radius: 20;" text="Играть">
+         <font>
+            <Font name="Arial" size="15.0" />
+         </font>
+      </Button>
+      <Button mnemonicParsing="false" prefHeight="45.0" prefWidth="202.0" style="-fx-background-radius: 20;" text="Настройки">
+         <font>
+            <Font name="Arial" size="15.0" />
+         </font>
+      </Button>
+      <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exit" prefHeight="45.0" prefWidth="202.0" style="-fx-background-radius: 20;" text="Выйти">
+         <font>
+            <Font name="Arial" size="15.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>
