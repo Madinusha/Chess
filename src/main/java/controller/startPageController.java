@@ -8,8 +8,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -36,80 +39,18 @@ public class startPageController {
 			e.printStackTrace();
 		}
 	}
-//	@FXML
-//	public void Login() {
-//		String registrationUrl = "http://localhost:3004/";
-//		openWebpage(registrationUrl);
-//	}
-
 
 	@FXML
-	public void Login() {
-		try {
-			// Создание объекта URL с адресом вашего сервера
-			URL url = new URL("http://localhost:3004/check-authentication");
+	public void Login() throws IOException{
+		Stage stage = (Stage) playButton.getScene().getWindow();
 
-			// Создание HTTP-соединения
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-			// Установка метода запроса (GET, POST и т.д.)
-			connection.setRequestMethod("POST");
-
-			// Отправка запроса
-			int responseCode = connection.getResponseCode();
-			System.out.println("Код ответа сервера: " + responseCode);
-
-			if (responseCode == 200) {
-				// Пользователь аутентифицирован
-				System.out.println("Пользователь аутентифицирован");
-
-				// Получение потока для чтения тела ответа
-				try (InputStream inputStream = connection.getInputStream()) {
-					// Чтение данных из потока
-					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-					StringBuilder response = new StringBuilder();
-					String line;
-					while ((line = reader.readLine()) != null) {
-						response.append(line);
-					}
-
-					// Вывод тела ответа
-					System.out.println("Response Body: " + response.toString());
-					Stage stage = (Stage) playButton.getScene().getWindow();
-//					stage.close();
-
-					Parent root = FXMLLoader.load(HelloChess.class.getResource("Game.fxml"));
-					stage.setTitle("HelloChess!");
-					stage.setScene(new Scene(root));
-					stage.show();
-				}
-
-			} else if (responseCode == 401){
-				// Пользователь не аутентифицирован, перенаправляем на страницу регистрации
-				System.out.println("// Пользователь НЕ аутентифицирован");
-
-				String registrationUrl = "http://localhost:3004/registration";
-				openWebpage(registrationUrl);
-			}
-
-			// Закрытие соединения
-			connection.disconnect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Parent root = FXMLLoader.load(HelloChess.class.getResource("Game.fxml"));
+		stage.setTitle("HelloChess!");
+		InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
+		stage.getIcons().add(new Image(iconStream));
+		stage.setScene(new Scene(root));
+		stage.show();
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	@FXML
@@ -119,6 +60,13 @@ public class startPageController {
 		alert.setTitle("Уже уходите?");
 		alert.setHeaderText(null);
 		alert.setContentText("Вы уверены, что хотите выйти из приложения?");
+		Region region = (Region) alert.getDialogPane();
+		region.setStyle("-fx-background-color: pink;");
+
+		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/white/King.png")));
+		imageView.setFitWidth(150); // устанавливаем размер иконки по вашему усмотрению
+		imageView.setFitHeight(150);
+		alert.setGraphic(imageView);
 
 		// Ожидаем ответа от пользователя
 		alert.showAndWait().ifPresent(response -> {
@@ -129,9 +77,6 @@ public class startPageController {
 			}
 		});
 	}
-
-
-
 	//	@FXML
 //	public void Login() {
 //		try {
@@ -142,41 +87,45 @@ public class startPageController {
 //			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 //
 //			// Установка метода запроса (GET, POST и т.д.)
-//			connection.setRequestMethod("GET");
-//
+//			connection.setRequestMethod("POST");
 //
 //			// Отправка запроса
 //			int responseCode = connection.getResponseCode();
 //			System.out.println("Код ответа сервера: " + responseCode);
-//			switch (responseCode){
-//				case 401:
-//					String registrationUrl = "http://localhost:3004/";
-//					openWebpage(registrationUrl);
-//					//return;
-//				case 200:
-//					// Чтение ответа от сервера
-//					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//					StringBuffer response = new StringBuffer();
-//					String inputLine;
-//					while ((inputLine = in.readLine()) != null) {
-//						response.append(inputLine);
+//
+//			if (responseCode == 200) {
+//				// Пользователь аутентифицирован
+//				System.out.println("Пользователь аутентифицирован");
+//
+//				// Получение потока для чтения тела ответа
+//				try (InputStream inputStream = connection.getInputStream()) {
+//					// Чтение данных из потока
+//					BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//					StringBuilder response = new StringBuilder();
+//					String line;
+//					while ((line = reader.readLine()) != null) {
+//						response.append(line);
 //					}
-//					in.close();
 //
-//					JSONParser parser = new JSONParser();
-//					JSONObject jsonResponse = (JSONObject) parser.parse(response.toString());
+//					// Вывод тела ответа
+//					System.out.println("Response Body: " + response.toString());
+//					Stage stage = (Stage) playButton.getScene().getWindow();
+////					stage.close();
 //
-//					// Получение значения поля "code" из объекта JSON
-//					String code = (String) jsonResponse.get("code");
-//					JSONObject user = (JSONObject) jsonResponse.get("user");
-//					long id = (Long) user.get("userId");
-//					System.out.println("ID = " + id);
-//					break;
-//				default:
-//					System.out.println("Другой код");
-//					break;
+//					Parent root = FXMLLoader.load(HelloChess.class.getResource("Game.fxml"));
+//					stage.setTitle("HelloChess!");
+//					stage.setScene(new Scene(root));
+//					stage.show();
+//				}
 //
+//			} else if (responseCode == 401){
+//				// Пользователь не аутентифицирован, перенаправляем на страницу регистрации
+//				System.out.println("// Пользователь НЕ аутентифицирован");
+//
+//				String registrationUrl = "http://localhost:3004/registration";
+//				openWebpage(registrationUrl);
 //			}
+//
 //			// Закрытие соединения
 //			connection.disconnect();
 //		} catch (Exception e) {

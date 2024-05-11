@@ -2,6 +2,10 @@ package com.example.chess;
 
 import controller.gameController;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -200,10 +204,22 @@ public class Chessboard {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Поздравляем!");
 		alert.setHeaderText(null);
-		alert.setContentText(winner + " выиграли игру!");
+		String win = winner.equals("white")? "Player 1": "Player 2";
+		alert.setContentText(win + " is a winner!");
+		Font font = new Font("Poor Richard", 40);
+		alert.getDialogPane().setStyle("-fx-font-size: 40px; -fx-font-family: 'Poor Richard';"); // Применение стилей к контейнеру диалога
+
+
+		Region region = (Region) alert.getDialogPane();
+		region.setStyle("-fx-background-color: pink;");
+		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/" + winner + "/King.png")));
+		imageView.setFitWidth(150);
+		imageView.setFitHeight(150);
+		alert.setGraphic(imageView);
 
 		alert.setOnCloseRequest(event -> {
-			controller.gridPane.getChildren().clear();
+			controller.gridPane1.getChildren().clear();
+			controller.gridPane2.getChildren().clear();
 			// Здесь нужно выйти в главное меню
 			controller.initialize();
 		});
@@ -460,9 +476,15 @@ public class Chessboard {
 
 	public void checkPromotion(Position position) { // Только для пешек. Проверяет, оказались ли они на противоположном конце доски
 		Figure pawn = getFigureAt(position);
-		if (position.getRow() == 1 && pawn.getColor().equals("black")|| position.getRow() == 8 && pawn.getColor().equals("white")) {
-			controller.displayPromotionMenu(position);
+//		if (position.getRow() == 1 && pawn.getColor().equals("black") || position.getRow() == 8 && pawn.getColor().equals("white")) {
+//			controller.displayPromotionMenu(position, controller.gridPane1);
+//		}
+		if (position.getRow() == 1 && pawn.getColor().equals("black")){
+			controller.displayPromotionMenu(position, controller.gridPane2);
+		} else if (position.getRow() == 8 && pawn.getColor().equals("white")) {
+			controller.displayPromotionMenu(position, controller.gridPane1);
 		}
+
 	}
 	public void exchangePawn(Position position, String figName)
 	{
