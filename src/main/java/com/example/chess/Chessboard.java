@@ -2,6 +2,8 @@ package com.example.chess;
 
 import controller.gameController;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -202,16 +204,16 @@ public class Chessboard {
 
 	public void showWinMessage(String winner) {
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Поздравляем!");
+		alert.setTitle("Congratulations!");
 		alert.setHeaderText(null);
 		String win = winner.equals("white")? "Player 1": "Player 2";
 		alert.setContentText(win + " is a winner!");
-		Font font = new Font("Poor Richard", 40);
-		alert.getDialogPane().setStyle("-fx-font-size: 40px; -fx-font-family: 'Poor Richard';"); // Применение стилей к контейнеру диалога
+		alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #F0D9B5;"); // Применение стилей к контейнеру диалога
 
+		Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+		okButton.setText("Hurray!");
+		okButton.setStyle("-fx-background-color: #B58863; -fx-background-radius:  20;");
 
-		Region region = (Region) alert.getDialogPane();
-		region.setStyle("-fx-background-color: pink;");
 		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/" + winner + "/King.png")));
 		imageView.setFitWidth(150);
 		imageView.setFitHeight(150);

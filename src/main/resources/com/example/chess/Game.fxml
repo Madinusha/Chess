@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="root" onKeyPressed="#handleEscapeKey" alignment="CENTER" prefHeight="614.0" prefWidth="886.0" style="-fx-background-color: pink;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gameController">
+<HBox fx:id="root" alignment="CENTER" onKeyPressed="#handleEscapeKey" prefHeight="614.0" prefWidth="886.0" style="-fx-background-color: #F0D9B5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.gameController">
    <children>
       <VBox alignment="CENTER" prefHeight="590.0" prefWidth="420.0">
          <children>
@@ -45,7 +45,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <cursor>
-                  <Cursor fx:constant="OPEN_HAND" />
+                  <Cursor fx:constant="HAND" />
                </cursor>
                <effect>
                   <DropShadow />
@@ -64,7 +64,7 @@
             </Label>
          </children>
       </VBox>
-      <VBox alignment="CENTER" prefWidth="420.0">
+      <VBox alignment="CENTER" prefHeight="590.0" prefWidth="420.0">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="82.0" prefWidth="230.0" text="Player 2" textAlignment="CENTER">
                <font>
@@ -96,7 +96,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <cursor>
-                  <Cursor fx:constant="OPEN_HAND" />
+                  <Cursor fx:constant="HAND" />
                </cursor>
                <effect>
                   <DropShadow />
@@ -105,7 +105,7 @@
                   <Insets top="20.0" />
                </VBox.margin>
             </GridPane>
-            <Label fx:id="eatenFigures2" prefHeight="39.0" prefWidth="394.0" textFill="WHITE">
+            <Label fx:id="eatenFigures2" prefHeight="39.0" prefWidth="394.0">
                <font>
                   <Font size="23.0" />
                </font>

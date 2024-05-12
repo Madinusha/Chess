@@ -46,7 +46,7 @@ public class startPageController {
 
 		Parent root = FXMLLoader.load(HelloChess.class.getResource("Game.fxml"));
 		stage.setTitle("HelloChess!");
-		InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
+		InputStream iconStream = HelloChess.class.getResourceAsStream("/images/white/Queen.png");
 		stage.getIcons().add(new Image(iconStream));
 		stage.setScene(new Scene(root));
 		stage.show();
@@ -57,16 +57,26 @@ public class startPageController {
 	public void exit() {
 		// Создаем диалоговое окно подтверждения
 		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.setTitle("Уже уходите?");
+		alert.setTitle("Are you leaving already?");
 		alert.setHeaderText(null);
-		alert.setContentText("Вы уверены, что хотите выйти из приложения?");
-		Region region = (Region) alert.getDialogPane();
-		region.setStyle("-fx-background-color: pink;");
+		alert.setContentText("Do you want to exit?");
+		alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #F0D9B5;");
+		Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+		InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
+		alertStage.getIcons().add(new Image(iconStream));
 
 		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/white/King.png")));
 		imageView.setFitWidth(150); // устанавливаем размер иконки по вашему усмотрению
 		imageView.setFitHeight(150);
 		alert.setGraphic(imageView);
+
+		Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+		okButton.setText("Yes");
+		okButton.setStyle("-fx-background-color: #F0D9B5; -fx-background-radius:  20;");
+
+		Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
+		cancelButton.setText("Cancel");
+		cancelButton.setStyle("-fx-background-color: #B58863; -fx-background-radius:  20;");
 
 		// Ожидаем ответа от пользователя
 		alert.showAndWait().ifPresent(response -> {

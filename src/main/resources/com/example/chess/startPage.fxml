@@ -8,19 +8,22 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="628.0" prefWidth="818.0" spacing="30.0" style="-fx-background-color: pink;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.startPageController">
+<VBox alignment="CENTER" prefHeight="628.0" prefWidth="818.0" spacing="30.0" style="-fx-background-color: #B58863;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.startPageController">
    <children>
       <ImageView fitHeight="130.0" fitWidth="600.0">
          <image>
             <Image url="@../../../images/белые.png" />
          </image>
       </ImageView>
-      <Button fx:id="playButton" mnemonicParsing="false" onAction="#Login" prefHeight="55.0" prefWidth="250.0" style="-fx-background-radius: 20;" text="play">
+      <Button fx:id="playButton" focusTraversable="false" mnemonicParsing="false" onAction="#Login" prefHeight="55.0" prefWidth="250.0" style="-fx-background-radius: 20; -fx-background-color: #E3DECB;" text="♛ play ♕">
          <font>
             <Font name="Poor Richard" size="31.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Button>
-      <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="55.0" prefWidth="250.0" style="-fx-background-radius: 20;" text="exit" textAlignment="CENTER">
+      <Button fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" focusTraversable="false" mnemonicParsing="false" onAction="#exit" prefHeight="55.0" prefWidth="250.0" style="-fx-background-radius: 20; -fx-background-color: #E3DECB;" text="♗ exit ♝" textAlignment="CENTER">
          <font>
             <Font name="Poor Richard" size="33.0" />
          </font>
@@ -28,7 +31,7 @@
             <Insets />
          </opaqueInsets>
          <cursor>
-            <Cursor fx:constant="CROSSHAIR" />
+            <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
       <ImageView fitHeight="130.0" fitWidth="600.0">

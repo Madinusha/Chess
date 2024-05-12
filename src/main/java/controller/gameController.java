@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -155,7 +157,7 @@ public class gameController {
 		stackPane.getChildren().add(resizeButton);
 		StackPane.setAlignment(resizeButton, Pos.BOTTOM_RIGHT);
 		resizeButton.setPrefSize(gridPane1.getHeight() / 8 / 8, gridPane1.getHeight() / 8 / 8);
-		//resizeButton.setStyle("-fx-cursor: ew-resize;");
+		resizeButton.setStyle("-fx-cursor: se-resize;");
 
 
 		placeFiguresSP(gridPane1);
@@ -695,34 +697,42 @@ public class gameController {
 	public void handleEscapeKey(KeyEvent event) {
 		if (event.getCode() == KeyCode.ESCAPE) {
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-			alert.setTitle("Вернуться в главное меню?");
+			alert.setTitle("Return to the main menu?");
 			alert.setHeaderText(null);
-			alert.setContentText("Вы хотите вернуться в главное меню?");
+			alert.setContentText("Do you want to return to the main menu?");
 
 			ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/black/Knight.png")));
 			imageView.setFitWidth(150);
 			imageView.setFitHeight(150);
 			alert.setGraphic(imageView);
+			Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+			InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
+			alertStage.getIcons().add(new Image(iconStream));
 
-			alert.getDialogPane().setStyle("-fx-background-color: pink;");
+			alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #B58863;");
 
-			alert.setOnCloseRequest(event1 -> {
+			Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+			okButton.setText("Yes");
+			okButton.setStyle("-fx-background-color: #B58863; -fx-background-radius:  20;");
+
+			Button cancelButton = (Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL);
+			cancelButton.setText("Cancel");
+			cancelButton.setStyle("-fx-background-color: #E3DECB; -fx-background-radius:  20;");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.isPresent() && result.get() == ButtonType.OK) {
 				Stage stage = (Stage) eatenFigures1.getScene().getWindow();
 				try {
-					VBox root = FXMLLoader.load(getClass().getResource("startPage.fxml"));
+					VBox root = FXMLLoader.load(getClass().getResource("/com/example/chess/startPage.fxml"));
 					Scene scene = new Scene(root);
-
 					stage.setScene(scene);
-					InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
-					stage.getIcons().add(new Image(iconStream));
-					stage.setTitle("Start");
-					stage.show();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			});
-
-			alert.show();
+			} else {
+				// Закрываем алерт
+				alert.close();
+			}
 		}
 	}
 
