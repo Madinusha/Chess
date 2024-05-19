@@ -8,8 +8,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +20,6 @@ import java.util.Map;
 public class Chessboard {
 	private Map<Position, Figure> board; // Шахматная доска
 	public gameController controller;
-
 	private List<Pair<Integer, Figure>> eatenFigures;
 	private List<Pair<Position, Position>> motionList;
 
@@ -34,7 +35,6 @@ public class Chessboard {
 		this.motionList = new ArrayList<>();
 		this.eatenFigures = new ArrayList<>();
 	}
-
 
 	public Map<Position, Figure> getChessboard() {
 		return board;
@@ -202,31 +202,7 @@ public class Chessboard {
 		return false;
 	}
 
-	public void showWinMessage(String winner) {
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Congratulations!");
-		alert.setHeaderText(null);
-		String win = winner.equals("white")? "Player 1": "Player 2";
-		alert.setContentText(win + " is a winner!");
-		alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #F0D9B5;"); // Применение стилей к контейнеру диалога
 
-		Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
-		okButton.setText("Hurray!");
-		okButton.setStyle("-fx-background-color: #B58863; -fx-background-radius:  20;");
-
-		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/" + winner + "/King.png")));
-		imageView.setFitWidth(150);
-		imageView.setFitHeight(150);
-		alert.setGraphic(imageView);
-
-		alert.setOnCloseRequest(event -> {
-			controller.gridPane1.getChildren().clear();
-			controller.gridPane2.getChildren().clear();
-			// Здесь нужно выйти в главное меню
-			controller.initialize();
-		});
-		alert.show();
-	}
 
 	private boolean isMoveLeadsToCheck(Position from, Position to, Figure movingFigure) {
 		Map<Position, Figure> tempBoard = new HashMap<>(board);
@@ -466,7 +442,7 @@ public class Chessboard {
 			String color = movingFigure.getColor().equals("white")? "black" : "white";
 			// Проверяем на мат
 			if (isCheckmate(color, board.getChessboard())) {
-				showWinMessage(movingFigure.getColor());
+				controller.showWinMessage(movingFigure.getColor());
 				System.out.println("Игра окончена. Шах и мат!");
 			}
 

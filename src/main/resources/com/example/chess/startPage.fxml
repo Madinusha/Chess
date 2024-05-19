@@ -10,7 +10,7 @@
 
 <VBox alignment="CENTER" prefHeight="628.0" prefWidth="818.0" spacing="30.0" style="-fx-background-color: #B58863;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.startPageController">
    <children>
-      <ImageView fitHeight="130.0" fitWidth="600.0">
+      <ImageView fitHeight="130.0" fitWidth="600.0" preserveRatio="true">
          <image>
             <Image url="@../../../images/белые.png" />
          </image>
@@ -34,7 +34,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <ImageView fitHeight="130.0" fitWidth="600.0">
+      <ImageView fitHeight="130.0" fitWidth="600.0" preserveRatio="true">
          <image>
             <Image url="@../../../images/черные.png" />
          </image>

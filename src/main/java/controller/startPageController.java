@@ -44,7 +44,7 @@ public class startPageController {
 	public void Login() throws IOException{
 		Stage stage = (Stage) playButton.getScene().getWindow();
 
-		Parent root = FXMLLoader.load(HelloChess.class.getResource("Game.fxml"));
+		Parent root = FXMLLoader.load(HelloChess.class.getResource("chosePlayerName.fxml"));
 		stage.setTitle("HelloChess!");
 		InputStream iconStream = HelloChess.class.getResourceAsStream("/images/white/Queen.png");
 		stage.getIcons().add(new Image(iconStream));
@@ -63,7 +63,7 @@ public class startPageController {
 		alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #F0D9B5;");
 		Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
 		InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
-		alertStage.getIcons().add(new Image(iconStream));
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/white/Queen.png")));
 
 		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/white/King.png")));
 		imageView.setFitWidth(150); // устанавливаем размер иконки по вашему усмотрению

@@ -48,6 +48,10 @@ public class gameController {
 	private Button resizeButton;
 	public Label eatenFigures1;
 	public Label eatenFigures2;
+	@FXML
+	private Label player1Label;
+	@FXML
+	private Label player2Label;
 	private Position selectedPosition;
 	private double mouseX, mouseY;
 	public Chessboard chessboard;
@@ -87,6 +91,11 @@ public class gameController {
 			mouseY = event.getSceneY();
 		});
 	}
+	public void setPlayerNames(String player1Name, String player2Name) {
+		player1Label.setText(player1Name);
+		player2Label.setText(player2Name);
+	}
+
 	public void createChessboard()
 	{
 		gameController controller = this;
@@ -100,31 +109,71 @@ public class gameController {
 		System.out.println(chessboard);
 		for (int row = 0; row < numRows; row++) {
 			for (int col = 0; col < numCols; col++) {
-				Position position = new Position(col+1, 7-(row+1));
+				Position position = new Position(col + 1, 8-(row));
 
 				Label label1 = new Label();
 				Label label2 = new Label();
+				if (position.getRow() == 1) {
+					label1.setText(" " + position.getCol());
+
+					label1.setAlignment(Pos.BOTTOM_LEFT);
+					StackPane.setAlignment(label1, Pos.BOTTOM_LEFT);
+				}
+				if (position.getColAsNumber() == 8) {
+					label1.setText("" + position.getRow() + " ");
+
+					label1.setAlignment(Pos.TOP_RIGHT);
+					StackPane.setAlignment(label1, Pos.TOP_RIGHT);
+				}
+				if (position.getRow() == 8) {
+					label2.setText(" " + position.getCol());
+
+					label2.setAlignment(Pos.BOTTOM_LEFT);
+					StackPane.setAlignment(label2, Pos.BOTTOM_LEFT);
+				}
+				if (position.getColAsNumber() == 1) {
+					label2.setText("" + position.getRow() + " ");
+
+					label2.setAlignment(Pos.TOP_RIGHT);
+					StackPane.setAlignment(label2, Pos.TOP_RIGHT);
+				}
+
+
 				label1.setMaxSize(100, 100);
 				label2.setMaxSize(100, 100);
 
 				if ((row + col) % 2 == 0) {
-					label1.setStyle("-fx-background-color: #F0D9B5;"); // светлая клетка
-					label2.setStyle("-fx-background-color: #F0D9B5;"); // светлая клетка
+					label1.setStyle("-fx-background-color: #F0D9B5; -fx-text-fill: #B58863; -fx-font-weight: bold;"); // светлая клетка
+					label2.setStyle("-fx-background-color: #F0D9B5; -fx-text-fill: #B58863; -fx-font-weight: bold;"); // светлая клетка
 				} else {
-					label1.setStyle("-fx-background-color: #B58863;"); // темная клетка
-					label2.setStyle("-fx-background-color: #B58863;"); // темная клетка
+					label1.setStyle("-fx-background-color: #B58863; -fx-text-fill: #F0D9B5; -fx-font-weight: bold;"); // темная клетка
+					label2.setStyle("-fx-background-color: #B58863; -fx-text-fill: #F0D9B5; -fx-font-weight: bold;"); // темная клетка
 				}
-				label1.setAlignment(Pos.CENTER);
-				label1.setStyle(label1.getStyle() + "-fx-alignment: center;");
-				label2.setAlignment(Pos.CENTER);
-				label2.setStyle(label1.getStyle() + "-fx-alignment: center;");
 
 				StackPane stackPane1 = new StackPane();
 				stackPane1.getChildren().add(label1);
 
+
 				StackPane stackPane2 = new StackPane(); // Создаем новый StackPane для gridPane2
 				stackPane2.getChildren().add(label2); // Добавляем label в новый StackPane
 				stackPane2.setRotate(180);
+
+				if (col == 7 && row == 7) {
+					Label newlabel = new Label(" h");
+					stackPane1.getChildren().add(newlabel);
+					newlabel.setStyle("-fx-text-fill: #B58863; -fx-font-weight: bold;"); // уменьшите размер шрифта, если необходимо
+					newlabel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE); // установите максимальный размер
+					newlabel.setAlignment(Pos.BOTTOM_LEFT);
+					StackPane.setAlignment(newlabel, Pos.BOTTOM_LEFT);
+				}
+				if (col == 0 && row == 0){
+					Label newlabel = new Label(" " + position.getCol());
+					stackPane2.getChildren().add(newlabel);
+					newlabel.setStyle("-fx-text-fill: #B58863; -fx-font-weight: bold;");
+					newlabel.setAlignment(Pos.BOTTOM_LEFT);
+					StackPane.setAlignment(newlabel, Pos.BOTTOM_LEFT);
+				}
+
 
 				gridPane1.add(stackPane1, col, row);
 				gridPane2.add(stackPane2, col, row);
@@ -412,7 +461,7 @@ public class gameController {
 					String color = figure.getColor().equals("white")? "black" : "white";
 					// Проверяем на мат
 					if (chessboard.isCheckmate(color, chessboard.getChessboard())) {
-						chessboard.showWinMessage(figure.getColor());
+						showWinMessage(figure.getColor());
 						System.out.println("Игра окончена. Шах и мат!");
 					}
 				}
@@ -635,6 +684,35 @@ public class gameController {
 		return (rowFrom - rowTo) * (gridPane.getHeight() / 8);
 	}
 
+	public void showWinMessage(String winner) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Congratulations!");
+		alert.setHeaderText(null);
+		String win = winner.equals("white")? player1Label.getText() : player1Label.getText();
+		alert.setContentText(win + " is a winner!");
+		alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #F0D9B5;"); // Применение стилей к контейнеру диалога
+
+		Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+		okButton.setText("Hurray!");
+		okButton.setStyle("-fx-background-color: #B58863; -fx-background-radius:  20;");
+		Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+		alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/white/Queen.png")));
+
+		ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/" + winner + "/King.png")));
+		imageView.setFitWidth(150);
+		imageView.setFitHeight(150);
+		alert.setGraphic(imageView);
+
+		alert.setOnCloseRequest(event -> {
+			gridPane1.getChildren().clear();
+			gridPane2.getChildren().clear();
+			// Здесь нужно выйти в главное меню
+			initialize();
+		});
+		alert.show();
+	}
+
+
 	public void placeFiguresSP(GridPane gridPane) {
 		for (Map.Entry<Position, Figure> entry : chessboard.getChessboard().entrySet()) {
 			Position position = entry.getKey();
@@ -706,8 +784,7 @@ public class gameController {
 			imageView.setFitHeight(150);
 			alert.setGraphic(imageView);
 			Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-			InputStream iconStream = HelloChess.class.getResourceAsStream("/icon2.png");
-			alertStage.getIcons().add(new Image(iconStream));
+			alertStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/white/Queen.png")));
 
 			alert.getDialogPane().setStyle("-fx-font-size: 30px; -fx-font-family: 'Poor Richard'; -fx-background-color: #B58863;");
 
